@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Package, User, LogOut, Home, History } from "lucide-react";
@@ -9,11 +7,13 @@ export function Navbar() {
   // const { isAuthenticated, user } = useAppSelector(
   //   (state: RootState) => state.auth
   // );
-  const isAuthenticated = true;
-  const user: { role: "admin" | "sender" | "receiver"; name: string } | null = {
-    name: "Emon",
-    role: "receiver",
-  };
+  const isAuthenticated = false;
+  const user: { role: "admin" | "sender" | "receiver"; name: string } | null =
+    null;
+  // {
+  //   name: "Emon",
+  //   role: "receiver",
+  // };
   const handleLogout = () => {};
 
   const getDashboardLink = () => {

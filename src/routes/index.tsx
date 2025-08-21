@@ -2,6 +2,8 @@ import App from "@/App";
 import About from "@/pages/About";
 import Contact from "@/pages/Contact";
 import HomePage from "@/pages/Home";
+import LoginPage from "@/pages/Login";
+import RegisterPage from "@/pages/Register";
 import TrackPage from "@/pages/Track";
 import { createBrowserRouter } from "react-router";
 
@@ -25,6 +27,14 @@ export const router = createBrowserRouter([
       {
         path: "/track",
         Component: TrackPage,
+      },
+      {
+        path: "/login",
+        Component: LoginPage,
+      },
+      {
+        path: "/register",
+        Component: RegisterPage,
       },
     ],
   },
