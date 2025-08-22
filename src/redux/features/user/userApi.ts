@@ -1,4 +1,5 @@
 import { baseApi } from "@/redux/baseApi";
+import type { IUser } from "@/types/user";
 
 const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -14,10 +15,11 @@ const userApi = baseApi.injectEndpoints({
         url: `/user?${queryParams}`,
       }),
     }),
-    getUserById: builder.query({
+    getUserById: builder.query<IUser, { id: string }>({
       query: (id) => ({
         url: `/user/${id}`,
       }),
+      transformResponse: (response: { data: IUser }) => response.data,
     }),
     updateUser: builder.mutation({
       query: ({ id, data }) => ({

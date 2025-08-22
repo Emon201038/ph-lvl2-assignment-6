@@ -2,6 +2,7 @@ import { envVars } from "@/config/env";
 import axios from "axios";
 const axiosInstance = axios.create({
   baseURL: `${envVars.API_URL}/api/v1`,
+  withCredentials: true,
 });
 
 // Add a request interceptor
