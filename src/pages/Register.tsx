@@ -1,5 +1,3 @@
-"use client";
-
 import type React from "react";
 
 import { useState } from "react";
@@ -42,8 +40,6 @@ export default function RegisterPage() {
     }
 
     try {
-      const { confirmPassword, ...registerData } = formData;
-
       toast.success("Registration Successful!", {
         description: `Welcome to ParcelPro,`,
       });
