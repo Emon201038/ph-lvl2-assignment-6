@@ -1,7 +1,4 @@
-"use client";
-
 import type React from "react";
-
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,6 +42,7 @@ import {
   useUpdateParcelStatusMutation,
 } from "@/redux/features/parcel/parcelApi";
 import { useDebounce } from "@/hooks/useDebounce";
+import { Label } from "../ui/label";
 
 interface ParcelTableProps {
   data?: {
@@ -104,11 +102,16 @@ export function ParcelTable({
     });
   };
 
-  const handleCancelParcel = async () => {
+  const handleCancelParcel = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (!selectedParcel) return;
 
+    const formData = new FormData(e.currentTarget);
     try {
-      await cancelParcel(selectedParcel._id).unwrap();
+      await cancelParcel({
+        id: selectedParcel._id,
+        note: formData.get("note") as string,
+      }).unwrap();
       toast.success("Parcel Cancelled Successfully!", {
         description: "The parcel has been successfully cancelled.",
       });
@@ -167,14 +170,16 @@ export function ParcelTable({
 
   const canCancelParcel = (parcel: IParcel) => {
     return (
-      userRole === UserRole.SENDER && parcel.status === ParcelStatus.PENDING
+      Object.values(UserRole).includes(userRole) &&
+      parcel.status === ParcelStatus.PENDING
     );
   };
 
   const canConfirmDelivery = (parcel: IParcel) => {
     return (
-      userRole === UserRole.RECEIVER &&
-      parcel.status === ParcelStatus.IN_TRANSIT
+      [UserRole.RECEIVER, UserRole.SUPER_ADMIN, UserRole.ADMIN].includes(
+        userRole
+      ) && parcel.status === ParcelStatus.IN_TRANSIT
     );
   };
 
@@ -471,7 +476,7 @@ export function ParcelTable({
                               </p>
                             )}
                             <p className="text-xs text-muted-foreground mt-1">
-                              Updated by: {log.updatedBy}
+                              Updated by: {log.updatedBy.name}
                             </p>
                           </div>
                         </div>
@@ -488,24 +493,40 @@ export function ParcelTable({
       {showCancelDialog && selectedParcel && (
         <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
           <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Cancel Parcel</DialogTitle>
-              <DialogDescription>
-                Are you sure you want to cancel parcel{" "}
-                {selectedParcel.trackingId}? This action cannot be undone.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setShowCancelDialog(false)}
-              >
-                Keep Parcel
-              </Button>
-              <Button variant="destructive" onClick={handleCancelParcel}>
-                Cancel Parcel
-              </Button>
-            </DialogFooter>
+            <form onSubmit={handleCancelParcel}>
+              <DialogHeader>
+                <DialogTitle>Cancel Parcel</DialogTitle>
+                <DialogDescription>
+                  Are you sure you want to cancel parcel{" "}
+                  {selectedParcel.trackingId}? This action cannot be undone.
+                  <div className="space-y-2 my-4">
+                    <Label htmlFor="cancel-reason">Cancel Reason</Label>
+                    <Input
+                      id="cancel-reason"
+                      name="note"
+                      required
+                      title="cancel reason is required"
+                      placeholder="Enter cancel reason"
+                    />
+                  </div>
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setShowCancelDialog(false);
+                    setSelectedParcel(null);
+                  }}
+                >
+                  Keep Parcel
+                </Button>
+                <Button variant="destructive" type="submit">
+                  Cancel Parcel
+                </Button>
+              </DialogFooter>
+            </form>
           </DialogContent>
         </Dialog>
       )}

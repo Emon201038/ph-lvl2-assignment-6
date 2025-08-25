@@ -4,6 +4,7 @@ import Contact from "@/pages/Contact";
 import HomePage from "@/pages/Home";
 import LoginPage from "@/pages/Login";
 import NotFound from "@/pages/NotFound";
+import ReceiverDashboard from "@/pages/receiver/receiver-page";
 import RegisterPage from "@/pages/Register";
 import CreateParcelPage from "@/pages/sender/CreateParcel";
 import SenderDashboard from "@/pages/sender/dashboard";
@@ -59,8 +60,8 @@ export const router = createBrowserRouter([
         Component: CreateParcelPage,
       },
       {
-        path: "/receiver",
-        Component: HomePage,
+        path: "/dashboard/receiver",
+        Component: ReceiverDashboard,
       },
       {
         path: "/admin",

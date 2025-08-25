@@ -14,6 +14,7 @@ export const parcelApi = baseApi.injectEndpoints({
           meta: IMeta;
         }>
       ) => response.data?.parcels,
+      providesTags: ["PARCEL"],
     }),
     getSenderParcels: builder.query<IParcel[], string>({
       query: (queryParams = "") => ({
@@ -39,19 +40,47 @@ export const parcelApi = baseApi.injectEndpoints({
       transformResponse: (response: IResponse<{ statusLogs: IStatusLog[] }>) =>
         response.data.statusLogs,
     }),
-    cancelParcel: builder.mutation<IParcel, string>({
-      query: (id) => ({
-        url: `/parcels/${id}/cancel`,
-        method: "PUT",
+    cancelParcel: builder.mutation<IParcel, { id: string; note: string }>({
+      query: ({ id, note }) => ({
+        url: `/parcels/cancel/${id}`,
+        method: "PATCH",
+        data: { note },
       }),
       transformResponse: (response: { data: IParcel }) => response.data,
+      async onQueryStarted({ id }, { dispatch, queryFulfilled, getState }) {
+        try {
+          const { data: updatedParcel } = await queryFulfilled;
+
+          const cacheEntries = parcelApi.util.selectInvalidatedBy(getState(), [
+            { type: "PARCEL" },
+          ]);
+
+          for (const { originalArgs } of cacheEntries) {
+            dispatch(
+              parcelApi.util.updateQueryData(
+                "getParcels",
+                originalArgs,
+                (draft) => {
+                  const index = draft.findIndex((p) => p._id === id);
+                  if (index !== -1) {
+                    draft[index] = updatedParcel;
+                  }
+                }
+              )
+            );
+          }
+        } catch (err) {
+          console.error("cancelParcel failed:", err);
+        }
+      },
     }),
+
     updateParcelStatus: builder.mutation<
       IParcel,
       { id: string; status: string; note: string }
     >({
       query: ({ id, status, note }) => ({
-        url: `/parcels/${id}/status`,
+        url: `/parcels/status/${id}`,
         method: "PUT",
         data: { status, note },
       }),
