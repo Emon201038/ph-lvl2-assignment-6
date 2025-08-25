@@ -2,8 +2,8 @@ import type {
   QueryActionCreatorResult,
   QueryDefinition,
 } from "@reduxjs/toolkit/query";
-import type { IUser } from "./user";
 import type { AxiosRequestConfig } from "axios";
+import type { IUser } from ".";
 
 export interface ISession {
   data?: IUser;

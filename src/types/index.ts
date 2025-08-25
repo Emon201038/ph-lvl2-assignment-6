@@ -5,6 +5,13 @@ export interface IResponse<T> {
   data: T;
 }
 
+export interface IMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
 export enum UserRole {
   SENDER = "SENDER",
   RECEIVER = "RECEIVER",
@@ -55,6 +62,7 @@ export enum DeliveryType {
 export enum ParcelStatus {
   PENDING = "PENDING",
   APPROVED = "APPROVED",
+  DISPATCHED = "DISPATCHED",
   PICK_UP_REQUESTED = "PICK_UP_REQUESTED",
   PICKED_UP = "PICKED_UP",
   IN_TRANSIT = "IN_TRANSIT",
@@ -89,7 +97,9 @@ export interface DeliveryInfo {
     coordinates: number[];
     address: string;
   };
-  pickupAddress: AddressInfo;
+  pickupAddress: AddressInfo & {
+    phone: string;
+  };
   deliveryAddress: AddressInfo & {
     phone: string;
   };
@@ -112,11 +122,12 @@ export interface packageDetails {
 }
 
 export interface IParcel extends Document {
+  _id: string;
   trackingId: string;
   status: ParcelStatus;
   weight: number;
-  sender: string;
-  receiver: string;
+  sender: string | IUser;
+  receiver: string | IUser;
   deliveryInfo: DeliveryInfo;
   packageDetails: packageDetails;
   paymentInfo: IParcelPayment;
@@ -125,13 +136,14 @@ export interface IParcel extends Document {
   isCanceled: boolean;
   isDeleted: boolean;
   reviews: string[];
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
   initiatedBy: string;
   deliveryAttempt: number;
 }
 
 export interface IStatusLog {
+  _id: string;
   status: ParcelStatus;
   timestamp: Date;
   location?: string;
