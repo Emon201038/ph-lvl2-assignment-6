@@ -86,6 +86,7 @@ export interface AddressInfo {
   state?: string;
   country?: string;
   postalCode?: string;
+  area: string;
 }
 
 export interface DeliveryInfo {
@@ -99,9 +100,11 @@ export interface DeliveryInfo {
   };
   pickupAddress: AddressInfo & {
     phone: string;
+    name: string;
   };
   deliveryAddress: AddressInfo & {
     phone: string;
+    name: string;
   };
   senderNote?: string;
 }
@@ -119,6 +122,7 @@ export interface packageDetails {
     name: string;
     quantity: number;
   }[];
+  type: "DOCUMENT" | "PHYSICAL";
 }
 
 export interface IParcel extends Document {
@@ -147,6 +151,9 @@ export interface IStatusLog {
   status: ParcelStatus;
   timestamp: Date;
   location?: string;
-  updatedBy: string;
+  updatedBy: {
+    _id: string;
+    name: string;
+  };
   note?: string;
 }

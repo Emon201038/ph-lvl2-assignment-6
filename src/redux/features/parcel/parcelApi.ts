@@ -1,6 +1,6 @@
 import type { ParcelSchema } from "@/lib/zodSchema";
 import { baseApi } from "@/redux/baseApi";
-import type { IMeta, IParcel, IResponse } from "@/types";
+import type { IMeta, IParcel, IResponse, IStatusLog } from "@/types";
 
 export const parcelApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -31,6 +31,13 @@ export const parcelApi = baseApi.injectEndpoints({
         url: `/parcels/${id}`,
       }),
       transformResponse: (response: IResponse<IParcel>) => response.data,
+    }),
+    trackParcel: builder.query<IStatusLog[], string>({
+      query: (id) => ({
+        url: `/parcels/tracking/${id}`,
+      }),
+      transformResponse: (response: IResponse<{ statusLogs: IStatusLog[] }>) =>
+        response.data.statusLogs,
     }),
     cancelParcel: builder.mutation<IParcel, string>({
       query: (id) => ({
@@ -68,4 +75,5 @@ export const {
   useUpdateParcelStatusMutation,
   useCreateParcelMutation,
   useGetSenderParcelsQuery,
+  useTrackParcelQuery,
 } = parcelApi;
