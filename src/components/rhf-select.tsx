@@ -15,10 +15,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { Input } from "./ui/input";
+import { useState } from "react";
 
 interface SelectOption {
   value: string;
   label: string;
+  id?: string;
 }
 
 interface RHFSelectProps<
@@ -33,6 +36,8 @@ interface RHFSelectProps<
   className?: string;
   disabled?: boolean;
   options: SelectOption[];
+  onChange?: (value: SelectOption) => void;
+  allowSearch?: boolean;
 }
 
 export function RHFSelect<
@@ -47,7 +52,12 @@ export function RHFSelect<
   className,
   disabled,
   options,
+  onChange,
+  allowSearch = false,
 }: RHFSelectProps<TFieldValues, TName>) {
+  const [optionValues, setOptionValues] = useState<SelectOption[]>(options);
+  const [search, setSearch] = useState<string>("");
+
   return (
     <FormField
       control={control}
@@ -56,7 +66,13 @@ export function RHFSelect<
         <FormItem className={cn("", className)}>
           {label && <FormLabel>{label}</FormLabel>}
           <Select
-            onValueChange={field.onChange}
+            onValueChange={(e) => {
+              field.onChange(e);
+              const selectedValue = options.find(
+                (option) => option.value === e
+              );
+              onChange?.(selectedValue!);
+            }}
             defaultValue={field.value}
             disabled={disabled}
           >
@@ -65,8 +81,28 @@ export function RHFSelect<
                 <SelectValue placeholder={placeholder} />
               </SelectTrigger>
             </FormControl>
-            <SelectContent>
-              {options.map((option) => (
+            <SelectContent onCloseAutoFocus={(e) => e.preventDefault()}>
+              {allowSearch && (
+                <div>
+                  <Input
+                    autoFocus
+                    type="search"
+                    placeholder="Search..."
+                    value={search}
+                    onChange={(e) => {
+                      setSearch(e.target.value);
+                      setOptionValues(
+                        options.filter((option) =>
+                          option.label
+                            .toLowerCase()
+                            .includes(e.target.value.toLowerCase())
+                        )
+                      );
+                    }}
+                  />
+                </div>
+              )}
+              {optionValues.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
                   {option.label}
                 </SelectItem>

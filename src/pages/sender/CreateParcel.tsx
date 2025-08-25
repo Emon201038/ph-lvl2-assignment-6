@@ -24,17 +24,91 @@ import { RHFTextarea } from "@/components/rhf-textarea";
 import { calculateDeliveryFee } from "@/utils/calculateDeliveryFee";
 import type z from "zod";
 import { useCreateParcelMutation } from "@/redux/features/parcel/parcelApi";
+import { useEffect, useState } from "react";
+import state from "@/../data/state.json";
+import { fetchAreas, fetchCities } from "@/utils/fetchLocation";
 
 export type ParcelFormType = ReturnType<
   typeof useForm<z.infer<typeof parcelSchema>>
 >;
+interface ICity {
+  id: string;
+  state_id: string;
+  name: string;
+}
+interface IArea {
+  id: string;
+  city_id: string;
+  name: string;
+}
 export default function CreateParcelPage() {
   const form = useForm({
     resolver: zodResolver(parcelSchema),
   });
+
+  const [cities, setCities] = useState<ICity[]>([]);
+  const [areas, setAreas] = useState<IArea[]>([]);
+  const [deliveryCities, setDeliveryCities] = useState<ICity[]>([]);
+  const [deliveryAreas, setDeliveryAreas] = useState<IArea[]>([]);
+  const [pickupAddress, setPickupAddress] = useState<{
+    state: string;
+    city: string;
+    area: string;
+  }>({
+    state: "",
+    city: "",
+    area: "",
+  });
+  const [deliveryAddress, setDeliveryAddress] = useState<{
+    state: string;
+    city: string;
+    area: string;
+  }>({
+    state: "",
+    city: "",
+    area: "",
+  });
   const navigate = useNavigate();
 
   const [createParcel, { isLoading }] = useCreateParcelMutation();
+
+  useEffect(() => {
+    if (pickupAddress.state) {
+      fetchCities(pickupAddress.state).then((data) => setCities(data));
+    } else {
+      setCities([]);
+    }
+  }, [pickupAddress.state]);
+
+  useEffect(() => {
+    if (pickupAddress.city) {
+      fetchAreas(pickupAddress.city).then((data) => {
+        setAreas(data);
+      });
+    } else {
+      setAreas([]);
+    }
+  }, [pickupAddress.city]);
+
+  useEffect(() => {
+    if (deliveryAddress.state) {
+      fetchCities(deliveryAddress.state).then((data) =>
+        setDeliveryCities(data)
+      );
+    } else {
+      setDeliveryCities([]);
+    }
+  }, [deliveryAddress.state]);
+
+  useEffect(() => {
+    if (deliveryAddress.city) {
+      fetchAreas(deliveryAddress.city).then((data) => {
+        setDeliveryAreas(data);
+      });
+    } else {
+      setDeliveryAreas([]);
+    }
+  }, [deliveryAddress.city]);
 
   const handleSubmit = async (e: ParcelSchema) => {
     try {
@@ -104,41 +178,59 @@ export default function CreateParcelPage() {
                     <RHFSelect
                       control={form.control}
                       name={"deliveryInfo.pickupAddress.state"}
-                      options={[
-                        {
-                          label: "Pickup Location 1",
-                          value: "Pickup Location 1",
-                        },
-                      ]}
+                      options={state.map((s) => ({
+                        label: s.name,
+                        value: s.name,
+                        id: s.id,
+                      }))}
                       label="State"
                       placeholder="State"
                       className="w-full"
+                      onChange={async (e) => {
+                        setPickupAddress((prev) => ({
+                          ...prev,
+                          state: e.id!,
+                        }));
+                      }}
+                      allowSearch
                     />
                     <RHFSelect
+                      allowSearch
                       control={form.control}
                       name={"deliveryInfo.pickupAddress.city"}
-                      options={[
-                        {
-                          label: "Pickup Location 1",
-                          value: "Pickup Location 1",
-                        },
-                      ]}
+                      options={cities.map((c) => ({
+                        label: c.name,
+                        value: c.name,
+                        id: c.id,
+                      }))}
                       label="City"
                       placeholder="City"
                       className="w-full"
+                      onChange={async (e) => {
+                        setPickupAddress((prev) => ({
+                          ...prev,
+                          city: e.id!,
+                        }));
+                      }}
                     />
                     <RHFSelect
+                      allowSearch
                       control={form.control}
                       name={"deliveryInfo.pickupAddress.area"}
-                      options={[
-                        {
-                          label: "Pickup Location 1",
-                          value: "Pickup Location 1",
-                        },
-                      ]}
+                      options={areas.map((a) => ({
+                        label: a.name,
+                        value: a.name,
+                        id: a.id,
+                      }))}
                       label="Area"
                       placeholder="Area"
                       className="w-full"
+                      onChange={async (e) => {
+                        setPickupAddress((prev) => ({
+                          ...prev,
+                          area: e.id!,
+                        }));
+                      }}
                     />
                   </div>
                   <RHFTextarea
@@ -181,43 +273,61 @@ export default function CreateParcelPage() {
                   </div>
                   <div className=" w-full grid grid-cols-3 items-center gap-1 md:gap-4">
                     <RHFSelect
+                      allowSearch
                       control={form.control}
                       name={"deliveryInfo.deliveryAddress.state"}
-                      options={[
-                        {
-                          label: "Pickup Location 1",
-                          value: "Pickup Location 1",
-                        },
-                      ]}
+                      options={state.map((s) => ({
+                        label: s.name,
+                        value: s.name,
+                        id: s.id,
+                      }))}
                       label="State"
                       placeholder="State"
                       className="w-full"
+                      onChange={async (e) => {
+                        setDeliveryAddress((prev) => ({
+                          ...prev,
+                          state: e.id!,
+                        }));
+                      }}
                     />
                     <RHFSelect
+                      allowSearch
                       control={form.control}
                       name={"deliveryInfo.deliveryAddress.city"}
-                      options={[
-                        {
-                          label: "Pickup Location 1",
-                          value: "Pickup Location 1",
-                        },
-                      ]}
+                      options={deliveryCities.map((c) => ({
+                        label: c.name,
+                        value: c.name,
+                        id: c.id,
+                      }))}
                       label="City"
                       placeholder="City"
                       className="w-full"
+                      onChange={async (e) => {
+                        setDeliveryAddress((prev) => ({
+                          ...prev,
+                          city: e.id!,
+                        }));
+                      }}
                     />
                     <RHFSelect
+                      allowSearch
                       control={form.control}
                       name={"deliveryInfo.deliveryAddress.area"}
-                      options={[
-                        {
-                          label: "Pickup Location 1",
-                          value: "Pickup Location 1",
-                        },
-                      ]}
+                      options={deliveryAreas.map((a) => ({
+                        label: a.name,
+                        value: a.name,
+                        id: a.id,
+                      }))}
                       label="Area"
                       placeholder="Area"
                       className="w-full"
+                      onChange={async (e) => {
+                        setDeliveryAddress((prev) => ({
+                          ...prev,
+                          area: e.id!,
+                        }));
+                      }}
                     />
                   </div>
                   <RHFTextarea
