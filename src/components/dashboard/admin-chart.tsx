@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Card,
   CardContent,
@@ -68,7 +66,7 @@ export function AdminChart({ parcels, users }: AdminChartProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full lg:col-span-2">
       <Card>
         <CardHeader>
           <CardTitle>Monthly Parcel Trends</CardTitle>

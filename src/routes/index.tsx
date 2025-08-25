@@ -1,5 +1,8 @@
 import App from "@/App";
 import About from "@/pages/About";
+import AdminDashboard from "@/pages/admin/dashboard";
+import ParcelManagementPage from "@/pages/admin/parcel-dashboard";
+import UserManagementPage from "@/pages/admin/user-dashboard";
 import Contact from "@/pages/Contact";
 import HomePage from "@/pages/Home";
 import LoginPage from "@/pages/Login";
@@ -64,8 +67,16 @@ export const router = createBrowserRouter([
         Component: ReceiverDashboard,
       },
       {
-        path: "/admin",
-        Component: HomePage,
+        path: "/dashboard/admin",
+        Component: AdminDashboard,
+      },
+      {
+        path: "/dashboard/admin/users",
+        Component: UserManagementPage,
+      },
+      {
+        path: "/dashboard/admin/parcels",
+        Component: ParcelManagementPage,
       },
     ],
   },

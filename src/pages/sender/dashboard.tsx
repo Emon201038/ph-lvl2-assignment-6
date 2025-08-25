@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { AuthGuard } from "@/components/auth/auth-guard";
 import {

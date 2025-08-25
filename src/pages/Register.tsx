@@ -1,6 +1,6 @@
 import type React from "react";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -14,9 +14,20 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Package, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useSession } from "@/providers/auth-provider";
 
 export default function RegisterPage() {
+  const session = useSession();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (session?.data?._id && !session?.isLoading) {
+      navigate("/");
+    }
+  }, [session]);
+
+  if (session?.isLoading) return <div>Loading...</div>;
   const [formData, setFormData] = useState({
     name: "",
     email: "",

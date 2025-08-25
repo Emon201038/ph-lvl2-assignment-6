@@ -1,5 +1,5 @@
 import { baseApi } from "@/redux/baseApi";
-import type { IUser } from "@/types";
+import type { IMeta, IResponse, IUser } from "@/types";
 
 const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -10,10 +10,15 @@ const userApi = baseApi.injectEndpoints({
         data: credentials,
       }),
     }),
-    getUsers: builder.query({
+    getUsers: builder.query<{ users: IUser[]; meta: IMeta }, string>({
       query: (queryParams = "") => ({
         url: `/user?${queryParams}`,
       }),
+      transformResponse: (
+        response: IResponse<{ users: IUser[]; meta: IMeta }>
+      ) => {
+        return { users: response.data.users, meta: response.data.meta };
+      },
     }),
     getUserById: builder.query<IUser, { id: string }>({
       query: (id) => ({
@@ -34,6 +39,12 @@ const userApi = baseApi.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    toggleUserBlock: builder.mutation({
+      query: (id) => ({
+        url: `/user/block/${id}`,
+        method: "PATCH",
+      }),
+    }),
   }),
 });
 
@@ -45,4 +56,5 @@ export const {
   useGetUserByIdQuery,
   useUpdateUserMutation,
   useDeleteUserMutation,
+  useToggleUserBlockMutation,
 } = userApi;

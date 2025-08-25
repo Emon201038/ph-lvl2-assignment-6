@@ -71,7 +71,6 @@ const LoginForm: React.FC<Props> = () => {
           : "/dashboard/receiver";
 
       navitage(dashboardPath);
-      console.log(data);
     } catch (error: any) {
       toast.error("Login Failed", {
         description: error.data?.message || "Invalid email or password",
