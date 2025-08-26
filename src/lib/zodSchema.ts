@@ -107,3 +107,42 @@ export const userSchema = z.object({
 });
 
 export type UserSchema = z.infer<typeof userSchema>;
+
+export const registerUserSchema = z
+  .object({
+    name: z
+      .string({ message: "Name is required" })
+      .min(2, "Min 2 characters")
+      .max(32, "Max 32 characters"),
+    email: z
+      .string({ message: "Email is required" })
+      .email({ message: "Invalid email address" })
+      .min(1, "Required"),
+    password: z
+      .string({ message: "Password is required" })
+      .min(6, "Password must be at least 6 characters")
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+      .regex(/[0-9]/, "Password must contain at least one number")
+      .regex(
+        /[@$!%*?&#]/,
+        "Password must contain at least one special character"
+      ),
+    confirmPassword: z
+      .string({ message: "Confirm Password is required" })
+      .min(6, "Password must be at least 6 characters")
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+      .regex(/[0-9]/, "Password must contain at least one number")
+      .regex(
+        /[@$!%*?&#]/,
+        "Password must contain at least one special character"
+      ),
+    role: z.enum(["SENDER", "RECEIVER"]),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"], // error message will appear at confirmPassword
+  });
+
+export type RegisterUserSchema = z.infer<typeof registerUserSchema>;

@@ -1,4 +1,4 @@
-import type { UserSchema } from "@/lib/zodSchema";
+import type { RegisterUserSchema, UserSchema } from "@/lib/zodSchema";
 import { baseApi } from "@/redux/baseApi";
 import type { IMeta, IResponse, IUser } from "@/types";
 import authApi from "../auth/authApi";
@@ -6,9 +6,9 @@ import type { PasswordChangeSchema } from "@/components/profile/password-form";
 
 const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    register: builder.mutation({
+    register: builder.mutation<IResponse<IUser>, RegisterUserSchema>({
       query: (credentials) => ({
-        url: "/auth/register",
+        url: "/user",
         method: "POST",
         data: credentials,
       }),

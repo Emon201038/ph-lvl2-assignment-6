@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Mail, Send, CheckCircle, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { useSendOtpMutation } from "@/redux/features/auth/authApi";
 
 interface SendOTPCardProps {
   title?: string;
@@ -30,26 +31,23 @@ export default function SendOTPCard({
   className = "",
   email,
 }: SendOTPCardProps) {
-  const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+
+  const [sendOTP, { isLoading }] = useSendOtpMutation();
 
   const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!email || !email.includes("@")) {
-      setError("Please enter a valid email address");
+      setError("Failed to send verification code. Please try again.");
       return;
     }
-
-    setIsLoading(true);
-    setError("");
     setSuccess(false);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await sendOTP({ email }).unwrap();
 
-      // For demo purposes, simulate successful email sending
       setSuccess(true);
       setIsConfirmed(true);
 
@@ -57,7 +55,6 @@ export default function SendOTPCard({
         description: `A 6-digit code has been sent to ${email}`,
       });
 
-      // Call success callback if provided
       onSuccess?.(email);
     } catch (error: any) {
       const errorMessage =
@@ -66,10 +63,8 @@ export default function SendOTPCard({
       onError?.(errorMessage);
 
       toast.error("Failed to Send Code", {
-        description: errorMessage,
+        description: error?.data?.message || errorMessage,
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 

@@ -48,7 +48,6 @@ const SetPasswordForm: React.FC<Props> = () => {
 
   const handleSubmit = async (data: z.infer<typeof setPasswordSchema>) => {
     try {
-      console.log(data);
       await setPassword(data).unwrap();
       toast.success("Password Set Successfully!", {
         description:

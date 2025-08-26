@@ -19,14 +19,17 @@ const authApi = baseApi.injectEndpoints({
       ) => response.data,
     }),
 
-    verify: builder.mutation({
+    verifyOTP: builder.mutation<
+      IResponse<null>,
+      { email: string; otp: string }
+    >({
       query: (credentials) => ({
         url: "/otp/verify",
         method: "POST",
         data: credentials,
       }),
     }),
-    sendOtp: builder.mutation({
+    sendOtp: builder.mutation<IResponse<null>, { email: string }>({
       query: (credentials) => ({
         url: "/otp/send",
         method: "POST",
@@ -88,7 +91,7 @@ const authApi = baseApi.injectEndpoints({
 
 export const {
   useLoginMutation,
-  useVerifyMutation,
+  useVerifyOTPMutation,
   useSendOtpMutation,
   useRefreshTokenQuery,
   useLogoutMutation,

@@ -1,6 +1,4 @@
-import type React from "react";
-
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -9,17 +7,40 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Package, Eye, EyeOff } from "lucide-react";
+import { Package } from "lucide-react";
 import { toast } from "sonner";
 import { Link, useNavigate } from "react-router";
 import { useSession } from "@/providers/auth-provider";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { registerUserSchema, type RegisterUserSchema } from "@/lib/zodSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { RHFInput } from "@/components/rhf-input";
+import { useRegisterMutation } from "@/redux/features/user/userApi";
 
 export default function RegisterPage() {
   const session = useSession();
   const navigate = useNavigate();
+
+  const [registerUser, { isLoading }] = useRegisterMutation();
+
+  const form = useForm({
+    resolver: zodResolver(registerUserSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      role: "SENDER",
+    },
+  });
 
   useEffect(() => {
     if (session?.data?._id && !session?.isLoading) {
@@ -28,60 +49,26 @@ export default function RegisterPage() {
   }, [session]);
 
   if (session?.isLoading) return <div>Loading...</div>;
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    role: "sender" as "sender" | "receiver",
-  });
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const isLoading = false;
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (formData.password !== formData.confirmPassword) {
-      toast.error("Password Mismatch!", {
-        description: "Passwords do not match. Please try again.",
-      });
-      return;
-    }
-
+  const handleSubmit = async (e: RegisterUserSchema) => {
     try {
-      toast.success("Registration Successful!", {
-        description: `Welcome to ParcelPro,`,
-      });
-
-      // Redirect based on role
-      // const dashboardPath =
-      //   result.user.role === "sender"
-      //     ? "/dashboard/sender"
-      //     : "/dashboard/receiver";
-
-      // router.push(dashboardPath);
+      const res = await registerUser(e).unwrap();
+      if (res?.success) {
+        toast.success("Registration Successful!", {
+          description: `Welcome to ParcelPro,`,
+        });
+        navigate("/verify", { state: { email: e.email } });
+      } else {
+        toast.error("Registration Failed", {
+          description:
+            res?.message || "Something went wrong. Please try again.",
+        });
+      }
     } catch (error: any) {
       toast.error("Registration Failed", {
         description:
           error.data?.message || "Something went wrong. Please try again.",
       });
     }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
-
-  const handleRoleChange = (value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      role: value as "sender" | "receiver",
-    }));
   };
 
   return (
@@ -113,113 +100,82 @@ export default function RegisterPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input
-                  id="name"
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(handleSubmit)}
+                className="space-y-6"
+              >
+                <RHFInput
+                  control={form.control}
                   name="name"
-                  value={formData.name}
-                  onChange={handleChange}
+                  label="Name"
                   placeholder="Enter your full name"
-                  required
                 />
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
-                <Input
-                  id="email"
+                <RHFInput
+                  control={form.control}
                   name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
+                  label="Email"
                   placeholder="Enter your email"
-                  required
+                  type="email"
                 />
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="Create a password"
-                    required
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </Button>
-                </div>
-              </div>
+                <RHFInput
+                  control={form.control}
+                  name="password"
+                  label="Password"
+                  type="password"
+                  placeholder="Enter your password"
+                />
 
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <div className="relative">
-                  <Input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    placeholder="Confirm your password"
-                    required
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  >
-                    {showConfirmPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </Button>
-                </div>
-              </div>
+                <RHFInput
+                  control={form.control}
+                  name="confirmPassword"
+                  label="Confirm Password"
+                  type="password"
+                  placeholder="Confirm your password"
+                />
 
-              <div className="space-y-3">
-                <Label>Account Type</Label>
-                <RadioGroup
-                  value={formData.role}
-                  onValueChange={handleRoleChange}
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="sender" id="sender" />
-                    <Label htmlFor="sender">
-                      Sender - I want to send parcels
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="receiver" id="receiver" />
-                    <Label htmlFor="receiver">
-                      Receiver - I want to receive parcels
-                    </Label>
-                  </div>
-                </RadioGroup>
-              </div>
+                <FormField
+                  control={form.control}
+                  name="role"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3">
+                      <FormLabel>Role</FormLabel>
+                      <FormControl>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          className="flex flex-col"
+                        >
+                          <FormItem className="flex items-center gap-3">
+                            <FormControl>
+                              <RadioGroupItem value="SENDER" />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              Sender - I want to send parcel
+                            </FormLabel>
+                          </FormItem>
+                          <FormItem className="flex items-center gap-3">
+                            <FormControl>
+                              <RadioGroupItem value="RECEIVER" />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              Receiver - I want to receive parcel
+                            </FormLabel>
+                          </FormItem>
+                        </RadioGroup>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Creating Account..." : "Create Account"}
-              </Button>
-            </form>
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? "Creating Account..." : "Create Account"}
+                </Button>
+              </form>
+            </Form>
           </CardContent>
         </Card>
       </div>
