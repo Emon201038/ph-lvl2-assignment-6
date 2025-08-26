@@ -2,7 +2,7 @@ import React from "react";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Button } from "./ui/button";
 import { History, Home, LogOut, Menu, User } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { UserRole, type IUser } from "@/types";
 import { useSession } from "@/providers/auth-provider";
 import authApi, { useLogoutMutation } from "@/redux/features/auth/authApi";
@@ -19,6 +19,8 @@ const NavbarDrawer: React.FC<Props> = ({ isOpen, setIsOpen }) => {
   const [logout] = useLogoutMutation();
   const dispatch = useAppDispatch();
 
+  const navigate = useNavigate();
+
   const handleNavClick = () => {
     setIsOpen(!open);
   };
@@ -28,6 +30,7 @@ const NavbarDrawer: React.FC<Props> = ({ isOpen, setIsOpen }) => {
     await logout(null);
     dispatch(authApi.util.resetApiState());
     session?.refetch?.();
+    navigate("/login");
   };
 
   const getDashboardLink = () => {
@@ -103,8 +106,33 @@ const NavbarDrawer: React.FC<Props> = ({ isOpen, setIsOpen }) => {
                     variant="ghost"
                     className="w-full justify-start text-lg"
                   >
-                    <User className="h-5 w-5 mr-2" />
-                    {user.name}
+                    Dashboard
+                  </Button>
+                </Link>
+                <Link to="/profile" onClick={handleNavClick}>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-lg"
+                  >
+                    {user?.picture ? (
+                      <img
+                        src={user?.picture}
+                        width={24}
+                        height={24}
+                        className="rounded-full"
+                        alt="Profile"
+                        onError={() => <User className="h-4 w-4" />}
+                      />
+                    ) : (
+                      <User className="h-4 w-4" />
+                    )}
+                    <span>
+                      {user.name
+                        .trim()
+                        .split(/\s+/) // split on any amount of whitespace
+                        .map((w) => w[0].toUpperCase())
+                        .join(".")}
+                    </span>
                   </Button>
                 </Link>
                 <Button

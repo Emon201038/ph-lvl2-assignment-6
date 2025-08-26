@@ -1,13 +1,6 @@
 import type { IArea, ICity, IUser } from "@/types";
 import React, { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
-import { Mail, Save, User } from "lucide-react";
+import { Mail, Save } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { userSchema, type UserSchema } from "@/lib/zodSchema";
@@ -26,7 +19,7 @@ interface Props {
   user: IUser;
 }
 
-const PersonalInfo: React.FC<Props> = ({ user }) => {
+const PersonalInfoForm: React.FC<Props> = ({ user }) => {
   const [address, setAddress] = useState({
     state: user?.adress?.state || "",
     city: user?.adress?.city || "",
@@ -113,111 +106,98 @@ const PersonalInfo: React.FC<Props> = ({ user }) => {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <User className="h-5 w-5" />
-          Profile Information
-        </CardTitle>
-        <CardDescription>
-          Update your personal information and contact details
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleProfileUpdate)}
-            className="space-y-4"
-          >
-            <RHFInput
-              name="name"
-              control={form.control}
-              placeholder="Enter your name"
-              label="Full Name"
-            />
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(handleProfileUpdate)}
+        className="space-y-4"
+      >
+        <RHFInput
+          name="name"
+          control={form.control}
+          placeholder="Enter your name"
+          label="Full Name"
+        />
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={user.email}
-                  placeholder="Enter your email"
-                  className="pl-10"
-                  disabled
-                />
-              </div>
-            </div>
-
-            <RHFInput
-              name="phone"
-              control={form.control}
-              label="Phone Number"
-              placeholder="Enter your phone number"
+        <div className="space-y-2">
+          <Label htmlFor="email">Email Address</Label>
+          <div className="relative">
+            <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              value={user.email}
+              placeholder="Enter your email"
+              className="pl-10"
+              disabled
             />
-            <div className="flex flex-wrap gap-3">
-              <RHFSelect
-                name="adress.state"
-                control={form.control}
-                label="State"
-                options={states.map((state) => ({
-                  label: state.name,
-                  value: state.name,
-                  id: state.id,
-                }))}
-                placeholder="Select your state"
-                onChange={(value) =>
-                  setAddress({ ...address, state: value.id as string })
-                }
-              />
-              <RHFSelect
-                name="adress.city"
-                control={form.control}
-                label="City"
-                options={cities.map((city) => ({
-                  label: city.name,
-                  value: city.name,
-                  id: city.id,
-                }))}
-                placeholder="Select your city"
-                onChange={(value) =>
-                  setAddress({ ...address, city: value.id as string })
-                }
-              />
-              <RHFSelect
-                name="adress.area"
-                control={form.control}
-                label="Area"
-                options={areas.map((area) => ({
-                  label: area.name,
-                  value: area.name,
-                  id: area.id,
-                }))}
-                placeholder="Select your area"
-                onChange={(value) =>
-                  setAddress({ ...address, area: value.id as string })
-                }
-              />
-            </div>
-            <RHFInput
-              name="adress.adress"
-              control={form.control}
-              label="Address"
-              placeholder="Enter your full address"
-            />
+          </div>
+        </div>
 
-            <Button type="submit" disabled={isLoading} className="w-full">
-              <Save className="h-4 w-4 mr-2" />
-              {isLoading ? "Updating..." : "Update Profile"}
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+        <RHFInput
+          name="phone"
+          control={form.control}
+          label="Phone Number"
+          placeholder="Enter your phone number"
+        />
+        <div className="flex flex-wrap gap-3">
+          <RHFSelect
+            name="adress.state"
+            control={form.control}
+            label="State"
+            options={states.map((state) => ({
+              label: state.name,
+              value: state.name,
+              id: state.id,
+            }))}
+            placeholder="Select your state"
+            onChange={(value) =>
+              setAddress({ ...address, state: value.id as string })
+            }
+          />
+          <RHFSelect
+            name="adress.city"
+            control={form.control}
+            label="City"
+            options={cities.map((city) => ({
+              label: city.name,
+              value: city.name,
+              id: city.id,
+            }))}
+            placeholder="Select your city"
+            onChange={(value) =>
+              setAddress({ ...address, city: value.id as string })
+            }
+          />
+          <RHFSelect
+            name="adress.area"
+            control={form.control}
+            label="Area"
+            options={areas.map((area) => ({
+              label: area.name,
+              value: area.name,
+              id: area.id,
+            }))}
+            placeholder="Select your area"
+            onChange={(value) =>
+              setAddress({ ...address, area: value.id as string })
+            }
+          />
+        </div>
+        <RHFInput
+          name="adress.adress"
+          control={form.control}
+          label="Address"
+          placeholder="Enter your full address"
+        />
+
+        <Button type="submit" disabled={isLoading} className="w-full">
+          <Save className="h-4 w-4 mr-2" />
+          {isLoading ? "Updating..." : "Update Profile"}
+        </Button>
+      </form>
+    </Form>
   );
 };
 
-export default PersonalInfo;
+export default PersonalInfoForm;

@@ -3,7 +3,7 @@ import { useId } from "react";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { FormControl, FormField, FormItem } from "../ui/form";
-import type { ParcelFormType } from "@/pages/sender/CreateParcel";
+import type { ParcelFormType } from "@/pages/dashboard/sender/CreateParcel";
 
 export default function ParcelType({ form }: { form: ParcelFormType }) {
   const id = useId();

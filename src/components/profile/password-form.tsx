@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
+
 import z from "zod";
 import { Lock } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -69,6 +63,7 @@ const Password: React.FC<Props> = ({ user }) => {
       toast.success("Password Updated Successfully!", {
         description: "Your password has been updated successfully.",
       });
+      form.reset();
     } catch (error) {
       toast.error("Update Failed", {
         description:
@@ -78,59 +73,43 @@ const Password: React.FC<Props> = ({ user }) => {
     }
   };
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Lock className="h-5 w-5" />
-          Change Password
-        </CardTitle>
-        <CardDescription>
-          Update your password to keep your account secure
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-4"
-          >
-            <RHFInput
-              name="currentPassword"
-              label="Current Password"
-              control={form.control}
-              type="password"
-              placeholder="Enter current password"
-            />
-            <RHFInput
-              name="password"
-              control={form.control}
-              type="password"
-              label="New Password"
-              placeholder="Enter new password"
-            />
-            <RHFInput
-              name="confirmPassword"
-              control={form.control}
-              type="password"
-              label="Confirm Password"
-              placeholder="Enter confirm password"
-            />
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <RHFInput
+          name="currentPassword"
+          label="Current Password"
+          control={form.control}
+          type="password"
+          placeholder="Enter current password"
+        />
+        <RHFInput
+          name="password"
+          control={form.control}
+          type="password"
+          label="New Password"
+          placeholder="Enter new password"
+        />
+        <RHFInput
+          name="confirmPassword"
+          control={form.control}
+          type="password"
+          label="Confirm Password"
+          placeholder="Enter confirm password"
+        />
 
-            <Button type="submit" disabled={isLoading} className="w-full">
-              <Lock className="h-4 w-4 mr-2" />
-              {isLoading ? "Updating..." : "Update Password"}
-            </Button>
-          </form>
-          <Link
-            to="/forgot-password"
-            state={{ email: user.email }}
-            className="w-full text-center text-blue-500 underline mt-2 "
-          >
-            Forgot Password?
-          </Link>
-        </Form>
-      </CardContent>
-    </Card>
+        <Button type="submit" disabled={isLoading} className="w-full">
+          <Lock className="h-4 w-4 mr-2" />
+          {isLoading ? "Updating..." : "Update Password"}
+        </Button>
+      </form>
+      <Link
+        to="/forgot-password"
+        state={{ email: user.email }}
+        className="w-full text-center text-blue-500 underline mt-2 "
+      >
+        Forgot Password?
+      </Link>
+    </Form>
   );
 };
 

@@ -1,19 +1,20 @@
 import App from "@/App";
 import About from "@/pages/About";
-import AdminDashboard from "@/pages/admin/dashboard";
-import ParcelManagementPage from "@/pages/admin/parcel-dashboard";
-import UserManagementPage from "@/pages/admin/user-dashboard";
+import AdminDashboard from "@/pages/dashboard/admin/dashboard";
+import ParcelManagementPage from "@/pages/dashboard/admin/parcel-dashboard";
+import UserManagementPage from "@/pages/dashboard/admin/user-dashboard";
 import Contact from "@/pages/Contact";
+import ForgotPasswordPage from "@/pages/auth/ForgotPassword";
 import HomePage from "@/pages/Home";
-import LoginPage from "@/pages/Login";
+import LoginPage from "@/pages/auth/Login";
 import NotFound from "@/pages/NotFound";
 import ProfilePage from "@/pages/Profile";
-import ReceiverDashboard from "@/pages/receiver/receiver-page";
-import RegisterPage from "@/pages/Register";
-import CreateParcelPage from "@/pages/sender/CreateParcel";
-import SenderDashboard from "@/pages/sender/dashboard";
+import ReceiverDashboard from "@/pages/dashboard/receiver/receiver-page";
+import RegisterPage from "@/pages/auth/Register";
+import CreateParcelPage from "@/pages/dashboard/sender/CreateParcel";
+import SenderDashboard from "@/pages/dashboard/sender/dashboard";
 import TrackPage from "@/pages/Track";
-import VerifyPage from "@/pages/Verify";
+import VerifyPage from "@/pages/auth/Verify";
 import { createBrowserRouter } from "react-router";
 
 export const router = createBrowserRouter([
@@ -48,6 +49,10 @@ export const router = createBrowserRouter([
       {
         path: "/verify",
         Component: VerifyPage,
+      },
+      {
+        path: "/forgot-password",
+        Component: ForgotPasswordPage,
       },
       {
         path: "/profile",

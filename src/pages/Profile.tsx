@@ -8,13 +8,23 @@ import {
 } from "@/components/ui/card";
 import { AuthGuard } from "@/components/auth/auth-guard";
 import { useGetProfileQuery } from "@/redux/features/auth/authApi";
-import PersonalInfo from "@/components/profile/personal-info-form";
 import type { IUser } from "@/types";
 import Password from "@/components/profile/password-form";
+import { useState } from "react";
+import PersonalInfoForm from "@/components/profile/personal-info-form";
+import PersonalInfo from "@/components/profile/personal-info";
+import { Edit, Lock, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import SetPasswordForm from "@/components/profile/set-password-form";
+import AuthProviders from "@/components/profile/auth-providers";
 
 function ProfilePageContent() {
   const { data: user } = useGetProfileQuery();
+  const [isEditMode, setIsEditMode] = useState(false);
 
+  const hasCredentialsProvider = user?.auths?.find(
+    (auth) => auth.provider === "CREDENTIALS"
+  );
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <div className="mb-8">
@@ -26,11 +36,64 @@ function ProfilePageContent() {
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Profile Information */}
-        <PersonalInfo user={user as IUser} />
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <User className="h-5 w-5" />
+                <CardTitle>Profile Information</CardTitle>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setIsEditMode(!isEditMode);
+                }}
+              >
+                <Edit className="h-4 w-4 mr-2" />
+                {isEditMode ? "Cancel" : "Edit"}
+              </Button>
+            </div>
+            <CardDescription>
+              {isEditMode
+                ? "Update your personal information and contact details"
+                : "Your personal information and contact details"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {isEditMode ? (
+              <PersonalInfoForm user={user as IUser} />
+            ) : (
+              <PersonalInfo user={user as IUser} />
+            )}
+          </CardContent>
+        </Card>
 
         {/* Password Update */}
-        <Password user={user as IUser} />
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Lock className="h-5 w-5" />
+              {hasCredentialsProvider ? "Change Password" : "Set Password"}
+            </CardTitle>
+            <CardDescription>
+              {hasCredentialsProvider
+                ? "Update your password to keep your account secure"
+                : "Set a password to enable email and password login"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {hasCredentialsProvider ? (
+              <Password user={user as IUser} />
+            ) : (
+              <SetPasswordForm />
+            )}
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Providers information */}
+      <AuthProviders user={user as IUser} />
 
       {/* Account Information */}
       <Card className="mt-6">

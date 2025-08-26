@@ -4,7 +4,7 @@ import { CheckCircle } from "lucide-react";
 import InputOtpCard from "@/components/InputOtpCard";
 import SendOTPCard from "@/components/SentOtpCard";
 import { useLocation } from "react-router";
-import NotFound from "./NotFound";
+import NotFound from "../NotFound";
 
 export default function VerifyPage() {
   const [isConfirmed, setIsConfirmed] = useState(false);
