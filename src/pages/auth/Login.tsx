@@ -10,6 +10,7 @@ import { Link, useNavigate } from "react-router";
 import LoginForm from "@/components/LoginForm";
 import { useEffect } from "react";
 import { useSession } from "@/hooks/session";
+import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
   const session = useSession();
@@ -55,6 +56,17 @@ export default function LoginPage() {
             <LoginForm />
           </CardContent>
         </Card>
+        <div className="w-full flex justify-center items-center">
+          <Button
+            onClick={() =>
+              window.open(`${import.meta.env.VITE_API_URL}/api/v1/auth/google`)
+            }
+            variant="outline"
+          >
+            <img src="/icons/google.svg" className="h-4 w-4" alt="Google" />
+            Sign In with Google
+          </Button>
+        </div>
       </div>
     </div>
   );

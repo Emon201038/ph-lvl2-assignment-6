@@ -23,7 +23,7 @@ const AuthProviders: React.FC<Props> = ({ user }) => {
   const getProviderIcon = (provider: AuthProvider) => {
     switch (provider) {
       case AuthProvider.GOOGLE:
-        return <Chrome className="h-4 w-4" />;
+        return <img src="/icons/google.svg" className="h-4 w-4" />;
       case AuthProvider.GITHUB:
         return <Github className="h-4 w-4" />;
       case AuthProvider.FACEBOOK:
