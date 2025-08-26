@@ -11,20 +11,24 @@ import { Button } from "./ui/button";
 import { Alert, AlertDescription } from "./ui/alert";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "./ui/input-otp";
 import { Link, useNavigate } from "react-router";
+import {
+  useSendOtpMutation,
+  useVerifyOTPMutation,
+} from "@/redux/features/auth/authApi";
+import { toast } from "sonner";
 
 interface Props {
   email: string;
-  role: string;
-  setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const InputOtpCard: React.FC<Props> = ({ setSuccess, email, role }) => {
+const InputOtpCard: React.FC<Props> = ({ email }) => {
   const [otp, setOtp] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [resendCooldown, setResendCooldown] = useState(60);
 
-  const router = useNavigate();
+  const navigate = useNavigate();
+  const [verifyOTP, { isLoading }] = useVerifyOTPMutation();
+  const [sendOTP, { isLoading: isSending }] = useSendOtpMutation();
 
   // Countdown timer for resend button
   useEffect(() => {
@@ -42,48 +46,27 @@ const InputOtpCard: React.FC<Props> = ({ setSuccess, email, role }) => {
       setError("Please enter the complete 6-digit code");
       return;
     }
-
-    setIsLoading(true);
     setError("");
 
     try {
-      // Simulate API call for OTP verification
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await verifyOTP({ email, otp }).unwrap();
 
-      // For demo purposes, accept any 6-digit code
-      if (otp === "000000") {
-        setError("Invalid verification code. Please try again.");
-        setIsLoading(false);
-        return;
-      }
+      toast.success("Verification successful!");
 
-      setSuccess(true);
-
-      // Redirect to appropriate dashboard after successful verification
-      setTimeout(() => {
-        const dashboardPath =
-          role === "admin"
-            ? "/dashboard/admin"
-            : role === "receiver"
-            ? "/dashboard/receiver"
-            : "/dashboard/sender";
-        router(dashboardPath);
-      }, 2000);
+      navigate("/login");
     } catch (error) {
       setError("Verification failed. Please try again.");
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const handleResendOTP = async () => {
-    setResendCooldown(60);
     setError("");
 
     try {
-      // Simulate API call to resend OTP
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      // Show success message or toast
+      await sendOTP({ email }).unwrap();
+      setResendCooldown(60);
+
+      toast.success("Verification code resent!");
     } catch (error) {
       setError("Failed to resend code. Please try again.");
     }
@@ -162,11 +145,13 @@ const InputOtpCard: React.FC<Props> = ({ setSuccess, email, role }) => {
           <Button
             variant="outline"
             onClick={handleResendOTP}
-            disabled={resendCooldown > 0}
+            disabled={resendCooldown > 0 || isSending}
             className="w-full"
           >
             {resendCooldown > 0
               ? `Resend code in ${resendCooldown}s`
+              : isSending
+              ? "Sending otp..."
               : "Resend verification code"}
           </Button>
 

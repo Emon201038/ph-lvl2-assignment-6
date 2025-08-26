@@ -1,23 +1,35 @@
 import { baseApi } from "@/redux/baseApi";
+import type { IResponse, IUser } from "@/types";
 
 const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.mutation({
+    login: builder.mutation<
+      IUser & { accessToken: string; refreshToken: string },
+      { email: string; password: string }
+    >({
       query: (credentials) => ({
         url: "/auth/login",
         method: "POST",
         data: credentials,
       }),
+      transformResponse: (
+        response: IResponse<
+          IUser & { accessToken: string; refreshToken: string }
+        >
+      ) => response.data,
     }),
 
-    verify: builder.mutation({
+    verifyOTP: builder.mutation<
+      IResponse<null>,
+      { email: string; otp: string }
+    >({
       query: (credentials) => ({
         url: "/otp/verify",
         method: "POST",
         data: credentials,
       }),
     }),
-    sendOtp: builder.mutation({
+    sendOtp: builder.mutation<IResponse<null>, { email: string }>({
       query: (credentials) => ({
         url: "/otp/send",
         method: "POST",
@@ -30,11 +42,20 @@ const authApi = baseApi.injectEndpoints({
         method: "GET",
       }),
     }),
-    logout: builder.query({
+    logout: builder.mutation({
       query: () => ({
         url: "/auth/logout",
-        method: "GET",
+        method: "POST",
       }),
+      invalidatesTags: ["PROFILE"],
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+        } finally {
+          // ✅ automatically clear all cached data
+          dispatch(authApi.util.resetApiState());
+        }
+      },
     }),
     setPassword: builder.mutation({
       query: (credentials) => ({
@@ -42,6 +63,7 @@ const authApi = baseApi.injectEndpoints({
         method: "POST",
         data: credentials,
       }),
+      invalidatesTags: ["PROFILE"],
     }),
     changePassword: builder.mutation({
       query: (credentials) => ({
@@ -57,17 +79,26 @@ const authApi = baseApi.injectEndpoints({
         data: credentials,
       }),
     }),
+    getProfile: builder.query<IUser, void>({
+      query: () => ({
+        url: "/auth/me",
+        method: "GET",
+      }),
+      transformResponse: (response: { data: IUser }) => response.data,
+      providesTags: ["PROFILE"],
+    }),
   }),
 });
 
 export const {
   useLoginMutation,
-  useVerifyMutation,
+  useVerifyOTPMutation,
   useSendOtpMutation,
   useRefreshTokenQuery,
-  useLogoutQuery,
+  useLogoutMutation,
   useSetPasswordMutation,
   useChangePasswordMutation,
   useForgetPasswordMutation,
+  useGetProfileQuery,
 } = authApi;
 export default authApi;
