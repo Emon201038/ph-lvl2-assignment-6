@@ -1,5 +1,8 @@
+import type { UserSchema } from "@/lib/zodSchema";
 import { baseApi } from "@/redux/baseApi";
 import type { IMeta, IResponse, IUser } from "@/types";
+import authApi from "../auth/authApi";
+import type { PasswordChangeSchema } from "@/components/profile/password-form";
 
 const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -26,13 +29,33 @@ const userApi = baseApi.injectEndpoints({
       }),
       transformResponse: (response: { data: IUser }) => response.data,
     }),
-    updateUser: builder.mutation({
+    updateUser: builder.mutation<
+      IUser,
+      { id: string; data: UserSchema | PasswordChangeSchema }
+    >({
       query: ({ id, data }) => ({
         url: `/user/${id}`,
         method: "PUT",
         data,
       }),
+      transformResponse: (response: IResponse<IUser>) => response.data,
+      invalidatesTags: ["PROFILE"],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        try {
+          const { data: updatedUser } = await queryFulfilled; // IUser
+
+          dispatch(
+            authApi.util.updateQueryData("getProfile", undefined, (draft) => {
+              // mutate the draft directly
+              Object.assign(draft, updatedUser);
+            })
+          );
+        } catch (error) {
+          throw error;
+        }
+      },
     }),
+
     deleteUser: builder.mutation({
       query: (id) => ({
         url: `/user/${id}`,

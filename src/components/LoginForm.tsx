@@ -112,7 +112,6 @@ const LoginForm: React.FC<Props> = () => {
                     {...field}
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
-                    required
                     className=" autofill:bg-transparent"
                   />
                 </FormControl>

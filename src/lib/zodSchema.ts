@@ -79,3 +79,31 @@ export const parcelSchema = z.object({
 });
 
 export type ParcelSchema = z.infer<typeof parcelSchema>;
+
+export const userSchema = z.object({
+  name: z
+    .string({ message: "Name is required" })
+    .min(1, "Required")
+    .max(32, "Max 32 characters"),
+  phone: z
+    .string({ message: "Phone number is required" })
+    .regex(
+      /^(?:\+8801|01)\d{9}$/,
+      "Phone number should be in the format +8801xxxxxxxxx or 01xxxxxxxxx"
+    )
+    .optional()
+    .or(z.literal("")),
+  adress: z
+    .object({
+      state: z.string({ message: " state is required" }).optional(),
+      city: z.string({ message: " city is required" }).optional(),
+      area: z.string({ message: " area is required" }).optional(),
+      adress: z
+        .string({ message: "Full Address is required" })
+        .optional()
+        .or(z.literal("")),
+    })
+    .optional(),
+});
+
+export type UserSchema = z.infer<typeof userSchema>;

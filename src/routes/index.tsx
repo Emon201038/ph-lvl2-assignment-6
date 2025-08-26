@@ -7,6 +7,7 @@ import Contact from "@/pages/Contact";
 import HomePage from "@/pages/Home";
 import LoginPage from "@/pages/Login";
 import NotFound from "@/pages/NotFound";
+import ProfilePage from "@/pages/Profile";
 import ReceiverDashboard from "@/pages/receiver/receiver-page";
 import RegisterPage from "@/pages/Register";
 import CreateParcelPage from "@/pages/sender/CreateParcel";
@@ -47,6 +48,10 @@ export const router = createBrowserRouter([
       {
         path: "/verify",
         Component: VerifyPage,
+      },
+      {
+        path: "/profile",
+        Component: ProfilePage,
       },
     ],
   },

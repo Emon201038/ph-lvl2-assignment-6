@@ -14,7 +14,10 @@ export const fetchCities = async (
   const response = await fetch(`/data/city.json?state=${state}`);
   const data = await response.json();
 
-  const filteredData = data.filter((item: any) => item.state_id === state);
+  const id = Number(state)
+    ? state
+    : data?.find((item: any) => item.name === state)?.id;
+  const filteredData = data.filter((item: any) => item.state_id === id);
   return filteredData;
 };
 
@@ -34,6 +37,9 @@ export const fetchAreas = async (
   const response = await fetch(`/data/area.json?city=${city}`);
   const data = await response.json();
 
-  const filteredData = data.filter((item: any) => item.city_id === city);
+  const id = Number(city)
+    ? city
+    : data?.find((item: any) => item.name === city)?.id;
+  const filteredData = data.filter((item: any) => item.city_id === id);
   return filteredData;
 };

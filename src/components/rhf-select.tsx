@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { Input } from "./ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface SelectOption {
   value: string;
@@ -58,6 +58,10 @@ export function RHFSelect<
   const [optionValues, setOptionValues] = useState<SelectOption[]>(options);
   const [search, setSearch] = useState<string>("");
 
+  useEffect(() => {
+    setOptionValues(options);
+  }, [options]);
+
   return (
     <FormField
       control={control}
@@ -78,7 +82,10 @@ export function RHFSelect<
           >
             <FormControl>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder={placeholder} />
+                <SelectValue
+                  placeholder={placeholder}
+                  className="overflow-ellipsis"
+                />
               </SelectTrigger>
             </FormControl>
             <SelectContent onCloseAutoFocus={(e) => e.preventDefault()}>

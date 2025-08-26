@@ -36,7 +36,12 @@ export interface IUser {
   email: string;
   phone: string;
   picture?: string;
-  adress?: string;
+  adress?: {
+    state: string;
+    city: string;
+    area: string;
+    address: string;
+  };
   password?: string;
   role: UserRole;
   isBlocked: boolean;
@@ -156,4 +161,15 @@ export interface IStatusLog {
     name: string;
   };
   note?: string;
+}
+
+export interface ICity {
+  id: string;
+  state_id: string;
+  name: string;
+}
+export interface IArea {
+  id: string;
+  city_id: string;
+  name: string;
 }

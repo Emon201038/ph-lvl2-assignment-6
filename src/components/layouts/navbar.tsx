@@ -8,9 +8,17 @@ import { type IUser } from "@/types";
 import authApi, { useLogoutMutation } from "@/redux/features/auth/authApi";
 import { useAppDispatch } from "@/redux/hooks";
 import NavbarDrawer from "../NavbarDrawer";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const session = useSession();
 
   const [logout] = useLogoutMutation();
@@ -83,33 +91,52 @@ export function Navbar() {
             <div className="hidden md:flex items-center space-x-4">
               {isAuthenticated && user ? (
                 <>
-                  <Link to={getDashboardLink()}>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="flex items-center space-x-1"
-                    >
-                      {user?.picture ? (
-                        <img
-                          src={user?.picture}
-                          width={24}
-                          height={24}
-                          className="rounded-full"
-                          alt="Profile"
-                          onError={() => <User className="h-4 w-4" />}
-                        />
-                      ) : (
-                        <User className="h-4 w-4" />
-                      )}
-                      <span>
-                        {user.name
-                          .trim()
-                          .split(/\s+/) // split on any amount of whitespace
-                          .map((w) => w[0].toUpperCase())
-                          .join(".")}
-                      </span>
-                    </Button>
-                  </Link>
+                  <DropdownMenu
+                    open={isDropdownOpen}
+                    onOpenChange={setIsDropdownOpen}
+                  >
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="flex items-center space-x-1"
+                      >
+                        {user?.picture ? (
+                          <img
+                            src={user?.picture}
+                            width={24}
+                            height={24}
+                            className="rounded-full"
+                            alt="Profile"
+                            onError={() => <User className="h-4 w-4" />}
+                          />
+                        ) : (
+                          <User className="h-4 w-4" />
+                        )}
+                        <span>
+                          {user.name
+                            .trim()
+                            .split(/\s+/) // split on any amount of whitespace
+                            .map((w) => w[0].toUpperCase())
+                            .join(".")}
+                        </span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start">
+                      <DropdownMenuItem
+                        onClick={() => setIsDropdownOpen(false)}
+                      >
+                        <Link to={getDashboardLink()}>Dashboard</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={() => setIsDropdownOpen(false)}
+                      >
+                        <Link to={"/profile"}>Profile</Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
                   <Button
                     variant="ghost"
                     size="sm"

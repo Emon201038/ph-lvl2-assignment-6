@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Package } from "lucide-react";
 import { toast } from "sonner";
-import { UserRole } from "@/types";
+import { UserRole, type IArea, type ICity } from "@/types";
 import { Link, useNavigate } from "react-router";
 import ParcelType from "@/components/parcel/parcel-type";
 import { useForm } from "react-hook-form";
@@ -31,16 +31,7 @@ import { fetchAreas, fetchCities } from "@/utils/fetchLocation";
 export type ParcelFormType = ReturnType<
   typeof useForm<z.infer<typeof parcelSchema>>
 >;
-interface ICity {
-  id: string;
-  state_id: string;
-  name: string;
-}
-interface IArea {
-  id: string;
-  city_id: string;
-  name: string;
-}
+
 export default function CreateParcelPage() {
   const form = useForm({
     resolver: zodResolver(parcelSchema),

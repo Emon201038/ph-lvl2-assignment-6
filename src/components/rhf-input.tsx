@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 // ----------------- Types -----------------
 
@@ -60,22 +62,46 @@ export function RHFInput<
   type = "text",
   ...rest // capture extra props (step, min, max, etc.)
 }: RHFInputProps<TFieldValues, TName>) {
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+
+  const toggleVisibility = () => setIsVisible((prevState) => !prevState);
   return (
     <FormField
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className={cn("", className)}>
+        <FormItem className={cn("relative", className)}>
           {label && <FormLabel>{label}</FormLabel>}
           <FormControl>
-            <Input
-              type={type}
-              placeholder={placeholder}
-              disabled={disabled}
-              {...field}
-              {...rest} // spread number-specific or other props
-            />
+            <div className="relative">
+              <Input
+                type={
+                  type === "password" ? (isVisible ? "text" : "password") : type
+                }
+                placeholder={placeholder}
+                disabled={disabled}
+                {...field}
+                {...rest}
+              />
+              {type === "password" && (
+                <button
+                  className={`text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 `}
+                  type="button"
+                  onClick={toggleVisibility}
+                  aria-label={isVisible ? "Hide password" : "Show password"}
+                  aria-pressed={isVisible}
+                  aria-controls="password"
+                >
+                  {isVisible ? (
+                    <EyeOffIcon size={16} aria-hidden="true" />
+                  ) : (
+                    <EyeIcon size={16} aria-hidden="true" />
+                  )}
+                </button>
+              )}
+            </div>
           </FormControl>
+
           {description && <FormDescription>{description}</FormDescription>}
           <FormMessage />
         </FormItem>
