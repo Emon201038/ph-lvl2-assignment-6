@@ -15,6 +15,7 @@ import {
   AlertTriangle,
   DollarSign,
   Activity,
+  Plus,
 } from "lucide-react";
 import { AdminChart } from "@/components/dashboard/admin-chart";
 import { SystemMetrics } from "@/components/dashboard/system-metrics";
@@ -72,6 +73,12 @@ export default function AdminDashboard() {
               </Link>
               <Link to="/dashboard/admin/parcels">
                 <Button size="sm">Manage Parcels</Button>
+              </Link>
+              <Link to="/dashboard/admin/create">
+                <Button className="mt-4 sm:mt-0 flex items-center gap-2">
+                  <Plus className="h-4 w-4" />
+                  Create Parcel
+                </Button>
               </Link>
             </div>
           </div>

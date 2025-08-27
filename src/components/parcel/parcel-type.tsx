@@ -30,7 +30,7 @@ export default function ParcelType({ form }: { form: ParcelFormType }) {
                     className="order-1 after:absolute after:inset-0"
                   />
                   <div className="grid grow gap-2">
-                    <Label htmlFor={`${id}-1`}>Regular Delivery</Label>
+                    <Label htmlFor={`${id}-1`}>Standard Delivery</Label>
                     <p
                       id={`${id}-1-description`}
                       className="text-muted-foreground text-xs"
