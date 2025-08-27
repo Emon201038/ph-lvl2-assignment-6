@@ -5,6 +5,7 @@ import { useLocation } from "react-router";
 import NotFound from "../NotFound";
 
 export default function VerifyPage() {
+  document.title = "Verify | ParcelPro";
   const [isConfirmed, setIsConfirmed] = useState(false);
   const location = useLocation();
 

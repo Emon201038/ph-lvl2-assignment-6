@@ -1,24 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import React, { useEffect } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "./ui/form";
+import { Form } from "./ui/form";
 import { useLoginMutation } from "@/redux/features/auth/authApi";
 import { UserRole } from "@/types";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useSession } from "@/providers/auth-provider";
+import { RHFInput } from "./rhf-input";
 
 interface Props {}
 
@@ -30,7 +22,6 @@ const formSchema = z.object({
 });
 
 const LoginForm: React.FC<Props> = () => {
-  const [showPassword, setShowPassword] = useState(false);
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -81,58 +72,28 @@ const LoginForm: React.FC<Props> = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <FormField
+        <RHFInput
+          type="email"
           name="email"
+          label="Email"
           control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  type="email"
-                  placeholder="Enter your email"
-                  required
-                  className=" autofill:bg-transparent"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          placeholder="Enter your email"
         />
-        <FormField
-          name="password"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <div className="relative">
-                <FormControl>
-                  <Input
-                    {...field}
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
-                    className=" autofill:bg-transparent"
-                  />
-                </FormControl>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div>
+          <RHFInput
+            type="password"
+            name="password"
+            label="Password"
+            control={form.control}
+            placeholder="Enter your password"
+          />
+          <Link
+            to="/forgot-password"
+            className="text-sm text-blue-500 underline text-right w-full"
+          >
+            Forgot Password?
+          </Link>
+        </div>
 
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? "Signing in..." : "Sign In"}

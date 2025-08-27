@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AuthGuard } from "@/components/auth/auth-guard";
 import {
   Card,
@@ -20,12 +20,17 @@ import ParcelBarchart from "@/components/dashboard/parcel-barchart";
 import { toast } from "sonner";
 
 export default function SenderDashboard() {
+  document.title = "Dashboard | ParcelPro";
+
   const session = useSession();
   const [filters, setFilters] = useState({
     page: 1,
     limit: 10,
     status: "",
     search: "",
+    isDeleted: false,
+    populate: "sender:name;picture;role,receiver:name;picture;role",
+    initiatedBy: session?.data?._id,
   });
 
   const {
@@ -33,12 +38,20 @@ export default function SenderDashboard() {
     isLoading,
     isError,
     error,
-  } = useGetSenderParcelsQuery(
-    `populate=sender:name;picture;role,receiver:name;picture;role&initiatedBy=${session?.data?._id}&search=${filters.search}&page=${filters.page}&limit=${filters.limit}&status=${filters.status}`,
-    {
-      skip: !session?.data?._id,
+    refetch,
+  } = useGetSenderParcelsQuery(new URLSearchParams(filters as any).toString(), {
+    skip: !session?.data?._id,
+  });
+
+  useEffect(() => {
+    if (session?.data?._id) {
+      setFilters((prev) => ({
+        ...prev,
+        initiatedBy: session?.data?._id,
+      }));
+      refetch();
     }
-  );
+  }, [session?.data?._id]);
 
   if (isLoading) return <div>Loading...</div>;
   if (isError)

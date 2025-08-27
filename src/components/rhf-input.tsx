@@ -26,6 +26,7 @@ interface BaseProps<
   placeholder?: string;
   className?: string;
   disabled?: boolean;
+  id?: string;
 }
 
 // Number-specific props (only if type is "number")
@@ -71,7 +72,7 @@ export function RHFInput<
       name={name}
       render={({ field }) => (
         <FormItem className={cn("relative", className)}>
-          {label && <FormLabel>{label}</FormLabel>}
+          {label && <FormLabel htmlFor={rest.id}>{label}</FormLabel>}
           <FormControl>
             <div className="relative">
               <Input

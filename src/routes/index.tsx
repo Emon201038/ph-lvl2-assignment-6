@@ -16,6 +16,7 @@ import SenderDashboard from "@/pages/dashboard/sender/dashboard";
 import TrackPage from "@/pages/Track";
 import VerifyPage from "@/pages/auth/Verify";
 import { createBrowserRouter } from "react-router";
+import ResetPassword from "@/pages/auth/ResetPassword";
 
 export const router = createBrowserRouter([
   {
@@ -53,6 +54,10 @@ export const router = createBrowserRouter([
       {
         path: "/forgot-password",
         Component: ForgotPasswordPage,
+      },
+      {
+        path: "/reset-password",
+        Component: ResetPassword,
       },
       {
         path: "/profile",

@@ -27,6 +27,7 @@ import { RHFInput } from "@/components/rhf-input";
 import { useRegisterMutation } from "@/redux/features/user/userApi";
 
 export default function RegisterPage() {
+  document.title = "Register | ParcelPro";
   const session = useSession();
   const navigate = useNavigate();
 

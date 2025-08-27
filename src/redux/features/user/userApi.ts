@@ -56,6 +56,15 @@ const userApi = baseApi.injectEndpoints({
       },
     }),
 
+    updateRole: builder.mutation<IUser, { id: string; role: string }>({
+      query: ({ id, role }) => ({
+        url: `/user/role/${id}`,
+        method: "PATCH",
+        data: { role },
+      }),
+      invalidatesTags: ["PROFILE", "USER"],
+    }),
+
     deleteUser: builder.mutation({
       query: (id) => ({
         url: `/user/${id}`,
@@ -78,6 +87,7 @@ export const {
   useGetUsersQuery,
   useGetUserByIdQuery,
   useUpdateUserMutation,
+  useUpdateRoleMutation,
   useDeleteUserMutation,
   useToggleUserBlockMutation,
 } = userApi;

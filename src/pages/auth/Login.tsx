@@ -13,6 +13,7 @@ import { useSession } from "@/hooks/session";
 import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
+  document.title = "Login | ParcelPro";
   const session = useSession();
   const navigate = useNavigate();
 

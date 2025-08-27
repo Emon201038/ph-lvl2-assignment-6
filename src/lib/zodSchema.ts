@@ -146,3 +146,39 @@ export const registerUserSchema = z
   });
 
 export type RegisterUserSchema = z.infer<typeof registerUserSchema>;
+
+export const resetPasswordSchema = z.object({
+  newPassword: z
+    .string({ message: "Password is required" })
+    .min(6, "Password must be at least 6 characters")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number")
+    .regex(
+      /[@$!%*?&#]/,
+      "Password must contain at least one special character"
+    ),
+  confirmPassword: z
+    .string({ message: "Confirm Password is required" })
+    .min(6, "Password must be at least 6 characters")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number")
+    .regex(
+      /[@$!%*?&#]/,
+      "Password must contain at least one special character"
+    ),
+  token: z
+    .string({ message: "Token is required" })
+    .regex(
+      /^([0-9a-zA-Z\-_=]{2,})\.([0-9a-zA-Z\-_=]{2,})\.([0-9a-zA-Z\-_=]*)$/,
+      "Invalid token"
+    )
+    .optional()
+    .or(z.literal("")),
+  id: z
+    .string({ message: "Id is required" })
+    .regex(/^[0-9a-fA-F]{24}$/, "Invalid id")
+    .optional()
+    .or(z.literal("")),
+});
