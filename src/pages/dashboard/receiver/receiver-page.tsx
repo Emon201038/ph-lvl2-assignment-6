@@ -27,6 +27,7 @@ export default function ReceiverDashboard() {
     populate:
       "receiver:name;picture;role,sender:name;picture;role,statusLogs.updatedBy:name;picture;role",
     receiver: session?.data?._id,
+    isDeleted: false,
   });
 
   const {

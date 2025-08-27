@@ -175,6 +175,7 @@ export interface IArea {
 }
 
 export interface IUserStat {
+  totalUsers: number;
   activeUsers: number;
   last7daysUsers: number;
   last30daysUsers: number;

@@ -6,25 +6,25 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ParcelStatus, type IParcel, type IUser } from "@/types";
+import { type IParcelStat, type IUserStat } from "@/types";
 import { TrendingUp, Users, Package } from "lucide-react";
 
 interface SystemMetricsProps {
-  parcels: IParcel[];
-  users: IUser[];
+  userStats: IUserStat;
+  parcelStats: IParcelStat;
 }
 
-export function SystemMetrics({ parcels, users }: SystemMetricsProps) {
+export function SystemMetrics({ userStats, parcelStats }: SystemMetricsProps) {
   const metrics = {
     deliveryRate:
-      parcels.length > 0
-        ? (parcels.filter((p) => p.status === ParcelStatus.DELIVERED).length /
-            parcels.length) *
+      parcelStats.allParcel > 0
+        ? ((parcelStats.parcelByStatus.DELIVERED || 0) /
+            parcelStats.allParcel) *
           100
         : 0,
     activeUserRate:
-      users.length > 0
-        ? (users.filter((u) => !u.isBlocked).length / users.length) * 100
+      userStats.totalUsers > 0
+        ? (userStats.activeUsers / userStats.totalUsers) * 100
         : 0,
     avgDeliveryTime: 2.5, // Mock data
     customerSatisfaction: 94.5, // Mock data
@@ -89,10 +89,7 @@ export function SystemMetrics({ parcels, users }: SystemMetricsProps) {
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-green-600">
-              {parcels
-                .reduce((acc, p) => acc + p.paymentInfo.deleveryFee, 0)
-                .toFixed(0)}{" "}
-              ৳
+              {parcelStats.totalRevinue} ৳
             </div>
             <div className="text-xs text-muted-foreground">Total Revenue</div>
           </div>

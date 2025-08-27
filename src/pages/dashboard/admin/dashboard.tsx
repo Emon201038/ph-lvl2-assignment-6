@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { AuthGuard } from "@/components/auth/auth-guard";
 import {
   Card,
@@ -9,8 +8,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useGetParcelsQuery } from "@/redux/features/parcel/parcelApi";
-import { useGetUsersQuery } from "@/redux/features/user/userApi";
 import {
   Users,
   Package,
@@ -21,7 +18,7 @@ import {
 } from "lucide-react";
 import { AdminChart } from "@/components/dashboard/admin-chart";
 import { SystemMetrics } from "@/components/dashboard/system-metrics";
-import { ParcelStatus, UserRole } from "@/types";
+import { UserRole, type IParcelStat, type IUserStat } from "@/types";
 import { Link } from "react-router";
 import {
   useGetParcelStatsQuery,
@@ -30,34 +27,15 @@ import {
 
 export default function AdminDashboard() {
   document.title = "Dashboard | ParcelPro";
-  const { data: userStats } = useGetUserStatsQuery("");
-  const { data: parcelStats } = useGetParcelStatsQuery("");
-  const [parcelFilters] = useState({
-    page: 1,
-    limit: 100,
-    status: "",
-    search: "",
-  });
+  const { data: userStats, isLoading: userStatsLoading } =
+    useGetUserStatsQuery("");
+  const { data: parcelStats, isLoading: parcelStatsLoading } =
+    useGetParcelStatsQuery("");
 
-  const [userFilters] = useState({
-    page: 1,
-    limit: 100,
-    role: "",
-    search: "",
-  });
-
-  const { data: parcelsData } = useGetParcelsQuery(
-    new URLSearchParams(parcelFilters as any).toString()
-  );
-  const { data: usersData } = useGetUsersQuery(
-    new URLSearchParams(userFilters as any).toString()
-  );
-
-  const parcels = parcelsData || [];
-  const users = usersData?.users || [];
+  if (userStatsLoading || parcelStatsLoading) return <div>Loading...</div>;
 
   const stats = {
-    totalUsers: users.length,
+    totalUsers: userStats?.totalUsers,
     totalParcels: parcelStats?.allParcel || 0,
     activeUsers: userStats?.activeUsers || 0,
     blockedUsers: userStats?.blockedUsers || 0,
@@ -69,21 +47,6 @@ export default function AdminDashboard() {
     totalRevenue: parcelStats?.totalRevinue || 0,
     monthlyRevenue: parcelStats?.monthlyRevenue || 0,
   };
-
-  const recentActivity = [
-    ...parcels.slice(0, 3).map((p) => ({
-      id: p._id,
-      type: "parcel",
-      action: `Parcel ${p.trackingId} status updated to ${p.status}`,
-      time: new Date(p.updatedAt),
-    })),
-    ...users.slice(0, 2).map((u) => ({
-      id: u._id,
-      type: "user",
-      action: `User ${u.name} ${u.isBlocked ? "blocked" : "registered"}`,
-      time: new Date(),
-    })),
-  ].sort((a, b) => b.time.getTime() - a.time.getTime());
 
   return (
     <AuthGuard allowedRoles={[UserRole.SUPER_ADMIN, UserRole.ADMIN]}>
@@ -322,8 +285,11 @@ export default function AdminDashboard() {
 
           {/* Charts and Analytics */}
           <div className="grid lg:grid-cols-3 gap-6 mb-8">
-            <AdminChart parcels={parcels} users={users} />
-            <SystemMetrics parcels={parcels} users={users} />
+            <AdminChart parcels={[]} users={[]} />
+            <SystemMetrics
+              userStats={userStats as IUserStat}
+              parcelStats={parcelStats as IParcelStat}
+            />
           </div>
 
           {/* Alerts and Notifications */}
