@@ -23,9 +23,15 @@ import { AdminChart } from "@/components/dashboard/admin-chart";
 import { SystemMetrics } from "@/components/dashboard/system-metrics";
 import { ParcelStatus, UserRole } from "@/types";
 import { Link } from "react-router";
+import {
+  useGetParcelStatsQuery,
+  useGetUserStatsQuery,
+} from "@/redux/features/admin/adminApi";
 
 export default function AdminDashboard() {
   document.title = "Dashboard | ParcelPro";
+  const { data: userStats } = useGetUserStatsQuery("");
+  const { data: parcelStats } = useGetParcelStatsQuery("");
   const [parcelFilters] = useState({
     page: 1,
     limit: 100,
@@ -52,33 +58,16 @@ export default function AdminDashboard() {
 
   const stats = {
     totalUsers: users.length,
-    totalParcels: parcels.length,
-    activeUsers: users.filter((u) => !u.isBlocked).length,
-    blockedUsers: users.filter((u) => u.isBlocked).length,
-    unVerifiedUsers: users.filter((u) => !u.isVerified).length,
-    pendingParcels: parcels.filter((p) => p.status === ParcelStatus.PENDING)
-      .length,
-    inTransitParcels: parcels.filter(
-      (p) => p.status === ParcelStatus.IN_TRANSIT
-    ).length,
-    deliveredParcels: parcels.filter((p) => p.status === ParcelStatus.DELIVERED)
-      .length,
-    cancelledParcels: parcels.filter((p) => p.status === ParcelStatus.CANCELED)
-      .length,
-    totalRevenue: parcels.reduce(
-      (acc, p) => acc + p.paymentInfo.deleveryFee,
-      0
-    ),
-    monthlyRevenue: parcels
-      .filter((p) => {
-        const date = new Date(p.createdAt);
-        const now = new Date();
-        return (
-          date.getMonth() === now.getMonth() &&
-          date.getFullYear() === now.getFullYear()
-        );
-      })
-      .reduce((acc, p) => acc + p.paymentInfo.deleveryFee, 0),
+    totalParcels: parcelStats?.allParcel || 0,
+    activeUsers: userStats?.activeUsers || 0,
+    blockedUsers: userStats?.blockedUsers || 0,
+    unVerifiedUsers: userStats?.unverifiedUsers || 0,
+    pendingParcels: parcelStats?.parcelByStatus.PENDING || 0,
+    inTransitParcels: parcelStats?.parcelByStatus.IN_TRANSIT || 0,
+    deliveredParcels: parcelStats?.parcelByStatus.DELIVERED || 0,
+    cancelledParcels: parcelStats?.parcelByStatus.CANCELED || 0,
+    totalRevenue: parcelStats?.totalRevinue || 0,
+    monthlyRevenue: parcelStats?.monthlyRevenue || 0,
   };
 
   const recentActivity = [
@@ -247,57 +236,30 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Senders</span>
-                    <Badge variant="outline">
-                      {
-                        users.filter(
-                          (u) =>
-                            u.role === UserRole.SENDER &&
-                            !u.isBlocked &&
-                            !u.isDeleted &&
-                            u.isVerified
-                        ).length
-                      }
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Receivers</span>
-                    <Badge variant="outline">
-                      {
-                        users.filter(
-                          (u) =>
-                            u.role === UserRole.RECEIVER &&
-                            !u.isBlocked &&
-                            !u.isDeleted &&
-                            u.isVerified
-                        ).length
-                      }
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Admins</span>
-                    <Badge variant="outline">
-                      {
-                        users.filter(
-                          (u) =>
-                            u.role === UserRole.ADMIN &&
-                            !u.isBlocked &&
-                            !u.isDeleted &&
-                            u.isVerified
-                        ).length
-                      }
-                    </Badge>
-                  </div>
+                  {Object.entries(userStats?.usersByRole || {})
+                    .map(([key, value]) => ({ role: key, count: value }))
+                    .map(({ role, count }) => (
+                      <div
+                        key={role}
+                        className="flex items-center justify-between"
+                      >
+                        <span className="text-sm">{role}</span>
+                        <Badge variant="outline">{count}</Badge>
+                      </div>
+                    ))}
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-red-600">Blocked Users</span>
-                    <Badge variant="destructive">{stats.blockedUsers}</Badge>
+                    <Badge variant="destructive">
+                      {userStats?.blockedUsers}
+                    </Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-red-600">
                       Unverified Users
                     </span>
-                    <Badge variant="destructive">{stats.unVerifiedUsers}</Badge>
+                    <Badge variant="destructive">
+                      {userStats?.unverifiedUsers}
+                    </Badge>
                   </div>
                 </div>
               </CardContent>
@@ -305,12 +267,12 @@ export default function AdminDashboard() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
-                <CardDescription>Latest system activities</CardDescription>
+                <CardTitle>Most Valuable User</CardTitle>
+                <CardDescription></CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {recentActivity.slice(0, 5).map((activity) => (
+                  {/* {recentActivity.slice(0, 5).map((activity) => (
                     <div key={activity.id} className="flex items-start gap-3">
                       <div className="w-2 h-2 rounded-full bg-primary mt-2" />
                       <div className="flex-1">
@@ -320,7 +282,39 @@ export default function AdminDashboard() {
                         </p>
                       </div>
                     </div>
-                  ))}
+                  ))} */}
+                  <div>
+                    <h1>Most Sender: </h1>
+                    <Link
+                      to={`/dashboard/admin/users/${parcelStats?.mostSender?._id}`}
+                      className="flex items-center gap-2"
+                    >
+                      <img
+                        src={
+                          parcelStats?.mostSender?.picture ||
+                          "/images/default-user.svg"
+                        }
+                        className="h-8 w-8 rounded-full object-cover border"
+                      />
+                      <p>{parcelStats?.mostSender?.name}</p>
+                    </Link>
+                  </div>
+                  <div>
+                    <h1>Most Receiver: </h1>
+                    <Link
+                      to={`/dashboard/admin/users/${parcelStats?.mostReceiver?._id}`}
+                      className="flex items-center gap-2"
+                    >
+                      <img
+                        src={
+                          parcelStats?.mostReceiver?.picture ||
+                          "/images/default-user.svg"
+                        }
+                        className="h-8 w-8 rounded-full object-cover border"
+                      />
+                      <p>{parcelStats?.mostReceiver?.name}</p>
+                    </Link>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -359,7 +353,7 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                 )}
-                {stats.blockedUsers > 0 && (
+                {(userStats?.blockedUsers as number) > 0 && (
                   <div className="flex items-center gap-3 p-3 bg-red-50 border border-red-200 rounded-lg">
                     <Users className="h-5 w-5 text-red-600" />
                     <div>

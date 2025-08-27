@@ -12,7 +12,7 @@ import { Package, Inbox, CheckCircle, Clock, TrendingDown } from "lucide-react";
 import { ParcelTable } from "@/components/dashboard/parcel-table";
 import { ReceiverChart } from "@/components/dashboard/receiver-chart";
 import { ParcelStatus, UserRole, type IParcel } from "@/types";
-import { useGetParcelsQuery } from "@/redux/features/parcel/parcelApi";
+import { useGetReceiverParcelsQuery } from "@/redux/features/parcel/parcelApi";
 import { useSession } from "@/providers/auth-provider";
 
 export default function ReceiverDashboard() {
@@ -33,9 +33,10 @@ export default function ReceiverDashboard() {
     data: parcelsData,
     isLoading,
     refetch,
-  } = useGetParcelsQuery(new URLSearchParams(filters as any).toString(), {
-    skip: !session.data?._id && session.isLoading,
-  });
+  } = useGetReceiverParcelsQuery(
+    new URLSearchParams(filters as any).toString(),
+    { skip: !session.data?._id && session.isLoading }
+  );
 
   useEffect(() => {
     if (session?.data?._id) {

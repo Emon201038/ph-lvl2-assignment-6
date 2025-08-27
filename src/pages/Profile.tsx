@@ -17,11 +17,15 @@ import { Edit, Lock, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SetPasswordForm from "@/components/profile/set-password-form";
 import AuthProviders from "@/components/profile/auth-providers";
+import ChangeRole from "@/components/profile/change-role";
 
 function ProfilePageContent() {
   document.title = "Profile | ParcelPro";
-  const { data: user } = useGetProfileQuery();
+  const { data: user, isLoading } = useGetProfileQuery();
   const [isEditMode, setIsEditMode] = useState(false);
+
+  if (isLoading) return <div>Loading ...</div>;
+  if (!isLoading && !user) return null;
 
   const hasCredentialsProvider = user?.auths?.find(
     (auth) => auth.provider === "CREDENTIALS"
@@ -95,6 +99,8 @@ function ProfilePageContent() {
 
       {/* Providers information */}
       <AuthProviders user={user as IUser} />
+
+      {user!.parcels?.length === 0 && <ChangeRole />}
 
       {/* Account Information */}
       <Card className="mt-6">

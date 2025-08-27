@@ -14,11 +14,22 @@ export const parcelApi = baseApi.injectEndpoints({
           meta: IMeta;
         }>
       ) => response.data?.parcels,
-      providesTags: ["PARCEL"],
+      providesTags: ["PARCEL", "PROFILE", "USER"],
     }),
     getSenderParcels: builder.query<IParcel[], string>({
       query: (queryParams = "") => ({
         url: `/parcels/sender?${queryParams}`,
+      }),
+      transformResponse: (
+        response: IResponse<{
+          parcels: IParcel[];
+          meta: IMeta;
+        }>
+      ) => response.data?.parcels,
+    }),
+    getReceiverParcels: builder.query<IParcel[], string>({
+      query: (queryParams = "") => ({
+        url: `/parcels/receiver?${queryParams}`,
       }),
       transformResponse: (
         response: IResponse<{
@@ -80,18 +91,21 @@ export const parcelApi = baseApi.injectEndpoints({
       { id: string; status: string; note: string }
     >({
       query: ({ id, status, note }) => ({
-        url: `/parcels/status/${id}`,
-        method: "PUT",
+        url: `/parcels/update-status/${id}`,
+        method: "PATCH",
         data: { status, note },
       }),
+      invalidatesTags: ["PARCEL", "PARCEL_STATS"],
       transformResponse: (response: { data: IParcel }) => response.data,
     }),
+
     createParcel: builder.mutation<IParcel, ParcelSchema>({
       query: (parcel) => ({
         url: "/parcels",
         method: "POST",
         data: parcel,
       }),
+      invalidatesTags: ["PARCEL_STATS"],
       transformResponse: (response: IResponse<IParcel>) => response.data,
     }),
   }),
@@ -104,5 +118,6 @@ export const {
   useUpdateParcelStatusMutation,
   useCreateParcelMutation,
   useGetSenderParcelsQuery,
+  useGetReceiverParcelsQuery,
   useTrackParcelQuery,
 } = parcelApi;

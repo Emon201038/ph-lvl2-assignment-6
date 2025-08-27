@@ -48,7 +48,7 @@ export interface IUser {
   isVerified: boolean;
   isDeleted: boolean;
   auths: IAuthProvider[];
-  orders: string[];
+  parcels: string[];
 }
 
 export interface IParcelPayment {
@@ -172,4 +172,35 @@ export interface IArea {
   id: string;
   city_id: string;
   name: string;
+}
+
+export interface IUserStat {
+  activeUsers: number;
+  last7daysUsers: number;
+  last30daysUsers: number;
+  usersByRole: {
+    [K in keyof typeof UserRole]: number;
+  };
+  blockedUsers: number;
+  verifiedUsers: number;
+  unverifiedUsers: number;
+}
+
+export interface IParcelStat {
+  allParcel: number;
+  parcelByStatus: {
+    [K in keyof typeof ParcelStatus]: number;
+  };
+  parcelByPaymentMethod: {
+    [K in keyof IParcelPayment["method"]]: number;
+  };
+  parcelByPaymentStatus: {
+    [K in keyof IParcelPayment["status"]]: number;
+  };
+  blockedParcels: number;
+  deletedParcels: number;
+  mostSender: any;
+  mostReceiver: any;
+  totalRevinue: number;
+  monthlyRevenue: number;
 }

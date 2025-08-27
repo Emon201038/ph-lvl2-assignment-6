@@ -34,6 +34,7 @@ import {
   ChevronRight,
   Package,
   CheckCircle,
+  Pencil,
 } from "lucide-react";
 import { ParcelStatus, UserRole, type IParcel, type IUser } from "@/types";
 import { toast } from "sonner";
@@ -43,6 +44,7 @@ import {
 } from "@/redux/features/parcel/parcelApi";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Label } from "../ui/label";
+import ParcelStatusModal from "./parcel-status-modal";
 
 interface ParcelTableProps {
   data?: {
@@ -170,7 +172,7 @@ export function ParcelTable({
 
   const canCancelParcel = (parcel: IParcel) => {
     return (
-      Object.values(UserRole).includes(userRole) &&
+      ["ADMIN", "SUPER_ADMIN", "SENDER"].includes(userRole) &&
       parcel.status === ParcelStatus.PENDING
     );
   };
@@ -239,6 +241,7 @@ export function ParcelTable({
             <TableRow>
               <TableHead>Tracking ID</TableHead>
               <TableHead>Receiver</TableHead>
+              {userRole === "ADMIN" && <TableHead>Sender</TableHead>}
               <TableHead>Status</TableHead>
               <TableHead>Weight</TableHead>
               <TableHead>Charge</TableHead>
@@ -262,14 +265,39 @@ export function ParcelTable({
                   <TableCell>
                     <div>
                       <div className="font-medium">
-                        {(parcel.receiver as IUser).name}
+                        {parcel.deliveryInfo.deliveryAddress.name}
                       </div>
                       <div className="text-sm text-muted-foreground">
                         {parcel.deliveryInfo.deliveryAddress.phone}
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>{getStatusBadge(parcel.status)}</TableCell>
+                  {userRole === "ADMIN" && (
+                    <TableCell>
+                      <div>
+                        <div className="font-medium">
+                          {parcel.deliveryInfo.pickupAddress.name}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {parcel.deliveryInfo.pickupAddress.phone}
+                        </div>
+                      </div>
+                    </TableCell>
+                  )}
+                  <TableCell>
+                    {getStatusBadge(parcel.status)}
+                    {userRole === UserRole.ADMIN && (
+                      <ParcelStatusModal
+                        id={parcel._id}
+                        tracking={parcel.trackingId}
+                        status={parcel.status}
+                      >
+                        <Button variant="ghost" size="icon">
+                          <Pencil />
+                        </Button>
+                      </ParcelStatusModal>
+                    )}
+                  </TableCell>
                   <TableCell>{parcel.packageDetails.weight} kg</TableCell>
                   <TableCell>{parcel.paymentInfo.deleveryFee}৳</TableCell>
                   <TableCell>
@@ -381,7 +409,7 @@ export function ParcelTable({
                   <div className="space-y-2 text-sm">
                     <p>
                       <span className="font-medium">Name:</span>{" "}
-                      {(selectedParcel.sender as IUser).name}
+                      {selectedParcel.deliveryInfo.pickupAddress.name}
                     </p>
                     <p>
                       <span className="font-medium">Phone:</span>{" "}
@@ -398,7 +426,7 @@ export function ParcelTable({
                   <div className="space-y-2 text-sm">
                     <p>
                       <span className="font-medium">Name:</span>{" "}
-                      {(selectedParcel.receiver as IUser).name}
+                      {selectedParcel.deliveryInfo.deliveryAddress.name}
                     </p>
                     <p>
                       <span className="font-medium">Phone:</span>{" "}
