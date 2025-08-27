@@ -33,6 +33,8 @@ export type ParcelFormType = ReturnType<
 >;
 
 export default function CreateParcelPage() {
+  document.title = "Create Parcel | ParcelPro";
+
   const form = useForm({
     resolver: zodResolver(parcelSchema),
   });

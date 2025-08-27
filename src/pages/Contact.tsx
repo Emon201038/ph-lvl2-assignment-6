@@ -1,6 +1,6 @@
 import type React from "react";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -16,6 +16,9 @@ import { Mail, Phone, MapPin, Clock } from "lucide-react";
 import { toast } from "sonner";
 
 export default function ContactPage() {
+  useEffect(() => {
+    document.title = "Contact | ParcelPro";
+  }, []);
   const [formData, setFormData] = useState({
     name: "",
     email: "",

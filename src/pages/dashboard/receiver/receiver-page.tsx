@@ -16,6 +16,8 @@ import { useGetParcelsQuery } from "@/redux/features/parcel/parcelApi";
 import { useSession } from "@/providers/auth-provider";
 
 export default function ReceiverDashboard() {
+  document.title = "Dashboard | ParcelPro";
+
   const session = useSession();
   const [filters, setFilters] = useState({
     page: 1,

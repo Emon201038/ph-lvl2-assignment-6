@@ -18,6 +18,7 @@ import { useTrackParcelQuery } from "@/redux/features/parcel/parcelApi";
 import ParcelDetails from "@/components/parcel/parcel-details";
 
 export default function TrackPage() {
+  document.title = "Track Parcel | ParcelPro";
   const [trackingId, setTrackingId] = useState("");
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();

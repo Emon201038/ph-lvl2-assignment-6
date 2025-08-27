@@ -20,6 +20,8 @@ import ParcelBarchart from "@/components/dashboard/parcel-barchart";
 import { toast } from "sonner";
 
 export default function SenderDashboard() {
+  document.title = "Dashboard | ParcelPro";
+
   const session = useSession();
   const [filters, setFilters] = useState({
     page: 1,

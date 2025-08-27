@@ -79,6 +79,16 @@ const authApi = baseApi.injectEndpoints({
         data: credentials,
       }),
     }),
+    resetPassword: builder.mutation<
+      IResponse<{ email: string }>,
+      { id: string; token: string; newPassword: string }
+    >({
+      query: (credentials) => ({
+        url: "/auth/reset-password",
+        method: "POST",
+        data: credentials,
+      }),
+    }),
     getProfile: builder.query<IUser, void>({
       query: () => ({
         url: "/auth/me",
@@ -99,6 +109,7 @@ export const {
   useSetPasswordMutation,
   useChangePasswordMutation,
   useForgetPasswordMutation,
+  useResetPasswordMutation,
   useGetProfileQuery,
 } = authApi;
 export default authApi;

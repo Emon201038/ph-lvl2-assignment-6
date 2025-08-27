@@ -25,6 +25,7 @@ import { ParcelStatus, UserRole } from "@/types";
 import { Link } from "react-router";
 
 export default function AdminDashboard() {
+  document.title = "Dashboard | ParcelPro";
   const [parcelFilters] = useState({
     page: 1,
     limit: 100,

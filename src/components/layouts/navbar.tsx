@@ -29,6 +29,7 @@ export function Navbar() {
   const handleLogout = async () => {
     await logout(null);
     dispatch(authApi.util.resetApiState());
+    setIsDropdownOpen(false);
   };
 
   const getDashboardLink = () => {
@@ -53,10 +54,14 @@ export function Navbar() {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-8">
             <Link to="/" className="flex items-center space-x-2">
-              <Package className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold text-foreground">
+              {/* <Package className="h-8 w-8 text-primary" /> */}
+              <img
+                src="/icons/parcel-pro.svg"
+                className="max-w-18 max-h-12 w-full h-full"
+              />
+              {/* <span className="text-xl font-bold text-foreground">
                 ParcelPro
-              </span>
+              </span> */}
             </Link>
 
             <div className="hidden md:flex space-x-6">

@@ -10,6 +10,7 @@ import { Package, Truck, Shield, Clock } from "lucide-react";
 import { Link } from "react-router";
 
 export default function HomePage() {
+  document.title = "Home | ParcelPro";
   return (
     <div className="min-h-screen">
       {/* Hero Section */}

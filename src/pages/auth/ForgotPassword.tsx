@@ -13,11 +13,14 @@ import { Label } from "@/components/ui/label";
 import { Package, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { Link, useLocation } from "react-router";
+import { useForgetPasswordMutation } from "@/redux/features/auth/authApi";
 
 export default function ForgotPasswordPage() {
+  document.title = "Forgot Password | ParcelPro";
   const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const [forgetPassword, { isLoading }] = useForgetPasswordMutation();
 
   const location = useLocation();
 
@@ -31,16 +34,17 @@ export default function ForgotPasswordPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
 
-    // Simulate API call delay
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      await forgetPassword({ email }).unwrap();
       setIsSubmitted(true);
-      toast.success("Reset Link Sent!", {
-        description: "Check your email for password reset instructions.",
-      });
-    }, 1500);
+
+      toast.success("Password reset instructions sent successfully!");
+    } catch (error: any) {
+      toast.error(
+        error.data.message || "Something went wrong. Please try again."
+      );
+    }
   };
 
   if (isSubmitted) {

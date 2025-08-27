@@ -19,6 +19,7 @@ import SetPasswordForm from "@/components/profile/set-password-form";
 import AuthProviders from "@/components/profile/auth-providers";
 
 function ProfilePageContent() {
+  document.title = "Profile | ParcelPro";
   const { data: user } = useGetProfileQuery();
   const [isEditMode, setIsEditMode] = useState(false);
 
