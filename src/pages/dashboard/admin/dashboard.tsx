@@ -34,6 +34,8 @@ export default function AdminDashboard() {
 
   if (userStatsLoading || parcelStatsLoading) return <div>Loading...</div>;
 
+  if (!userStats || !parcelStats) return null;
+
   const stats = {
     totalUsers: userStats?.totalUsers,
     totalParcels: parcelStats?.allParcel || 0,
@@ -285,7 +287,7 @@ export default function AdminDashboard() {
 
           {/* Charts and Analytics */}
           <div className="grid lg:grid-cols-3 gap-6 mb-8">
-            <AdminChart parcels={[]} users={[]} />
+            <AdminChart />
             <SystemMetrics
               userStats={userStats as IUserStat}
               parcelStats={parcelStats as IParcelStat}
