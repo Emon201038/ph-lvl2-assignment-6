@@ -378,9 +378,9 @@ export default function CreateParcelPage() {
                         min="0"
                         value={calculateDeliveryFee({
                           weight: form.watch("packageDetails.weight") as number,
-                          deliveryType: form.watch("packageDetails.type") as
-                            | "STANDARD"
-                            | "EXPRESS",
+                          deliveryType: form.watch(
+                            "deliveryInfo.deliveryType"
+                          ) as "STANDARD" | "EXPRESS",
                           pickupCity: form.watch(
                             "deliveryInfo.pickupAddress.city"
                           ),

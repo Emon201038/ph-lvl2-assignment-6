@@ -205,3 +205,10 @@ export interface IParcelStat {
   totalRevinue: number;
   monthlyRevenue: number;
 }
+
+export interface IMonthlyReport {
+  month: string;
+  parcels: number;
+  revenue: number;
+  users: number;
+}

@@ -10,7 +10,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import type { IParcel, IUser } from "@/types";
+import { useGetMonthlyReportQuery } from "@/redux/features/admin/adminApi";
 import {
   BarChart,
   Bar,
@@ -21,49 +21,14 @@ import {
   Line,
 } from "recharts";
 
-interface AdminChartProps {
-  parcels: IParcel[];
-  users: IUser[];
-}
+interface AdminChartProps {}
 
-export function AdminChart({ parcels, users }: AdminChartProps) {
-  // Process data for monthly trends (last 6 months)
-  const monthlyData = [];
-  const now = new Date();
-  for (let i = 5; i >= 0; i--) {
-    const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const monthName = date.toLocaleDateString("en-US", { month: "short" });
+export function AdminChart({}: AdminChartProps) {
+  const { data: monthlyData, isLoading } = useGetMonthlyReportQuery("");
 
-    const parcelsCount = parcels.filter((p) => {
-      const parcelDate = new Date(p.createdAt);
-      return (
-        parcelDate.getMonth() === date.getMonth() &&
-        parcelDate.getFullYear() === date.getFullYear()
-      );
-    }).length;
+  if (isLoading) return <div>Loading...</div>;
 
-    const usersCount = users.filter(() => {
-      // In real app, users would have createdAt field
-      return true; // Placeholder for demo
-    }).length;
-
-    const revenue = parcels
-      .filter((p) => {
-        const parcelDate = new Date(p.createdAt);
-        return (
-          parcelDate.getMonth() === date.getMonth() &&
-          parcelDate.getFullYear() === date.getFullYear()
-        );
-      })
-      .reduce((acc, p) => acc + p.paymentInfo.deleveryFee, 0);
-
-    monthlyData.push({
-      month: monthName,
-      parcels: parcelsCount,
-      users: Math.floor(usersCount / 6), // Distribute users across months for demo
-      revenue: revenue,
-    });
-  }
+  if (!monthlyData) return null;
 
   return (
     <div className="space-y-6 w-full lg:col-span-2">

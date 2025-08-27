@@ -86,6 +86,10 @@ export const router = createBrowserRouter([
         Component: AdminDashboard,
       },
       {
+        path: "/dashboard/admin/create",
+        Component: CreateParcelPage,
+      },
+      {
         path: "/dashboard/admin/users",
         Component: UserManagementPage,
       },
