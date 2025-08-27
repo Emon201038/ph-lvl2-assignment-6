@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { Chrome, Facebook, Github, Lock, Plus, Shield } from "lucide-react";
+import { Facebook, Github, Lock, Plus, Shield } from "lucide-react";
 import { Label } from "../ui/label";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";

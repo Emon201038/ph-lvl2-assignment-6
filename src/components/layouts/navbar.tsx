@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { Package, User, LogOut, History } from "lucide-react";
+import { User, LogOut, History } from "lucide-react";
 import { Link } from "react-router";
 import { useState } from "react";
 import { useSession } from "@/providers/auth-provider";
